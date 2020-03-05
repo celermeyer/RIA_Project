@@ -1,0 +1,235 @@
+@import url('https://fonts.googleapis.com/css?family=Ubuntu&display=swap');
+
+*, html {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family : 'Ubuntu', sans-serif;
+}
+
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+
+main{
+    display:flex;
+    justify-content: space-between;
+	min-height : 70%;
+}
+
+
+footer{
+  padding: 1rem;
+  background-color: #454545;
+  text-align: center;
+}
+
+
+h1{
+
+    text-align : center;
+    color : white;
+    font-family : 'Roboto slab';
+    padding-bottom: 0.5em;
+    padding-top: 2.5em;
+    
+	background: rgb(223,98,47);
+    background: linear-gradient(0deg, rgba(223,98,47,1) 63%, rgba(255,255,255,1) 100%);
+}
+
+
+h2{
+	margin-bottom : 4px;
+    border-bottom : solid 1px grey;
+}
+
+
+h2 + p{
+    color : grey;
+    font-style : italic;
+    float: right;
+}
+
+
+h3{
+	color : white;
+	background-color : rgba(223,98,47,1);
+	padding : 10px;
+}
+
+h4{
+    margin-top: 50px;
+    margin-bottom: 10px;
+}
+
+
+article p{
+    margin-bottom: 15px;   
+    text-align: justify;
+}
+
+
+a{
+	color : rgba(223,98,47,1);
+    text-decoration: none;
+}
+
+
+nav{
+    background-color: #484848;
+    display : inline-block;
+    width : 100%;
+    padding-left: 30px;
+}
+
+
+ul {
+	list-style : none;
+}
+
+
+li {
+    float: left;
+}
+
+
+li a{
+    display : block;
+    color : white;
+    font-size : 0.9em;
+    font-weight : bold;
+    padding : 10px;
+}
+
+
+.active a, li:hover a{
+    background-color: white;
+    color : orange;
+}
+
+
+.hamburger {
+    display : none;
+}
+
+
+#articles {
+	width : 100%;
+    padding: 30px;
+}
+
+
+article header {
+    margin-bottom: 3em;
+}
+
+
+aside {
+    width: 20%;
+    min-width: 300px;
+    box-shadow: 1px 1px 5px gray;
+    margin: 2em;
+    height: min-content;
+}
+
+
+aside li p {
+	padding : 10px;
+}
+
+
+table {
+	margin:50px auto;
+}
+
+
+tr:nth-of-type(odd) {
+	background: #eee;
+}
+
+
+th {
+    color: white;
+	background: #484848;
+	font-weight: bold;
+    text-align: center;
+}
+
+
+td, th {
+	padding: 15px;
+	font-size: 18px;
+}
+
+.maquette_image {
+    width: 70%;
+}
+
+.flux {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+@media only screen and (max-width: 760px) {
+    
+	table {
+	  	width: 100%;
+	}
+
+	table, thead, tbody, th, td, tr {
+		display: block;
+	}
+
+	thead tr {
+		display: none;
+	}
+
+	tr { 
+        border: 1px solid #ccc; 
+    }
+
+	td:first-child{
+        border-bottom: 1px solid black;
+        font-weight:  bold;
+    }
+    
+    .maquette_image, .flux {
+        width: 100%;
+    }
+    
+    main{
+        flex-direction: column;
+    }
+    
+}
+
+
+@media only screen and (max-width : 576px) {
+
+    .hamburger{
+        display: inline-block;
+    }
+
+	nav li {
+		text-align: center;
+		width: 100%;
+		margin: 0;
+	}
+
+    nav{
+        padding : 0px;
+    }
+
+    aside{
+        margin : 1em auto;
+    }
+    
+    
+    
+    
+}
