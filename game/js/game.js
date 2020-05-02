@@ -1,8 +1,10 @@
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
-canvas.width = 512;
-canvas.height = 480;
+canvas.width = 967;
+canvas.height = 579;
+//canvas.width = 512;
+//canvas.height = 480;
 var imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
 //document.body.appendChild(canvas);
 document.getElementById("jeu").appendChild(canvas);
@@ -43,6 +45,11 @@ var keysDown = {};
 
 addEventListener("keydown", function (e) {
 	keysDown[e.keyCode] = true;
+
+    // Lock scroll
+    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+        e.preventDefault();
+    }
 }, false);
 
 addEventListener("keyup", function (e) {
@@ -67,7 +74,7 @@ var update = function (modifier) {
         }
 	}
 	if (40 in keysDown) { // Player holding down
-        if (isInMap('y',42)){
+        if (isInMap('y',10+heroImage.height)){
 		  hero.y += hero.speed * modifier;
         }
 	}
@@ -77,7 +84,7 @@ var update = function (modifier) {
         }
 	}
 	if (39 in keysDown) { // Player holding right
-        if (isInMap('x',42)){
+        if (isInMap('x',10+heroImage.width)){
 		  hero.x += hero.speed * modifier;
         }
 	}
@@ -131,7 +138,7 @@ function isInMap(position,limit) {
     var data = ctx.getImageData(x, y, canvas.width, canvas.height).data;
     var rgb = [ data[0], data[1], data[2] ];
     console.log(rgb);
-    if (data[0] === 255 && data[1] === 255 && data[2] === 255){
+    if (data[0] === 255 && data[1] === 51 && data[2] === 51){
         return false;
     } else {
         return true;
