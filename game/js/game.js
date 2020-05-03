@@ -5,12 +5,9 @@ canvas.width = 967;
 canvas.height = 579;
 var imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
 document.getElementById("jeu").appendChild(canvas);
-
 var BB = canvas.getBoundingClientRect();
 var offsetX = BB.left;
-console.log('offsetX : ' + offsetX);
 var offsetY = BB.top;
-console.log('offsetY : ' + offsetY);
 var WIDTH = canvas.width;
 var HEIGHT = canvas.height;
 
@@ -44,10 +41,6 @@ function rect(x, y, w, h) {
     ctx.fill();
 }
 
-// clear the canvas
-function clear() {
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
-}
 
 // Background image
 var bgReady = false;
@@ -73,12 +66,21 @@ monsterImage.onload = function () {
 };
 monsterImage.src = "images/monster.png";
 
+// Key image
+var keyReady = false;
+var keyImage = new Image();
+keyImage.onload = function () {
+	keyReady = true;
+};
+keyImage.src = "images/key.png";
+
 // Game objects
 var hero = {
 	speed: 256 // movement in pixels per second
 };
 var monster = {};
 var monstersCaught = 0;
+var key = {};
 
 // Handle keyboard controls
 var keysDown = {};
@@ -104,6 +106,10 @@ var reset = function () {
 	// Throw the monster somewhere on the screen randomly
 	monster.x = 32 + (Math.random() * (canvas.width - 64));
 	monster.y = 32 + (Math.random() * (canvas.height - 64));
+
+    // Throw the key somewhere on the screen randomly
+	key.x = 32 + (Math.random() * (canvas.width - 64));
+	key.y = 32 + (Math.random() * (canvas.height - 64));
 };
 
 // Update game objects
@@ -155,10 +161,10 @@ var render = function () {
 		ctx.drawImage(monsterImage, monster.x, monster.y);
 	}
 
-    //clear();
-    //ctx.fillStyle = "#FAF7F8";
-    //rect(0, 0, WIDTH, HEIGHT);
-    // redraw each rect in the rects[] array
+    if (keyReady) {
+		ctx.drawImage(keyImage, key.x, key.y);
+	}
+
     for (var i = 0; i < rects.length; i++) {
         var r = rects[i];
         ctx.fillStyle = r.fill;
