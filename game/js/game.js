@@ -8,7 +8,9 @@ document.getElementById("jeu").appendChild(canvas);
 
 var BB = canvas.getBoundingClientRect();
 var offsetX = BB.left;
+console.log('offsetX : ' + offsetX);
 var offsetY = BB.top;
+console.log('offsetY : ' + offsetY);
 var WIDTH = canvas.width;
 var HEIGHT = canvas.height;
 
@@ -112,7 +114,7 @@ var update = function (modifier) {
         }
 	}
 	if (40 in keysDown) { // Player holding down
-        if (isInMap('y',10+heroImage.height)){
+        if (isInMap('y',10)){
 		  hero.y += hero.speed * modifier;
         }
 	}
@@ -122,7 +124,7 @@ var update = function (modifier) {
         }
 	}
 	if (39 in keysDown) { // Player holding right
-        if (isInMap('x',10+heroImage.width)){
+        if (isInMap('x',10)){
 		  hero.x += hero.speed * modifier;
         }
 	}
@@ -171,15 +173,27 @@ var render = function () {
 	ctx.fillText("Goblins caught: " + monstersCaught, 32, 32);
 };
 
-// Sylvain : border checking function
+// Sylvain : borders and malls checking function
 function isInMap(position,limit) {
-    var x = hero.x;
-    var y = hero.y;
+    var x = hero.x + heroImage.height/2;
+    var y = hero.y + heroImage.width/2;
+
+
 
     if (position === 'x') {
-        x += limit;
+        if(x + heroImage.height/2 > WIDTH && limit > 0)
+            return false;
+        else if(x - heroImage.height/2 < 0 && limit < 0)
+            return false;
+        else
+            x += limit;
     } else {
-        y += limit;
+        if(y + heroImage.width/2 > HEIGHT && limit > 0)
+            return false;
+        else if(y - heroImage.width/2 < 0 && limit < 0)
+            return false;
+        else
+            y += limit;
     }
 
     var data = ctx.getImageData(x, y, canvas.width, canvas.height).data;
