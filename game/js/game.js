@@ -253,6 +253,7 @@ function myUp(e) {
     }
 }
 
+//TEST BRANCHE SYLVAIN
 
 // handle mouse moves
 function myMove(e) {
