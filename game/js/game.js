@@ -16,30 +16,11 @@ var dragok = false;
 var startX;
 var startY;
 
-// an array of objects that define different rectangles
-var rects = [];
-rects.push({
-    x: 75 - 45,
-    y: 50 - 45,
-    width: 30,
-    height: 30,
-    fill: "#0c64e8",
-    isDragging: false
-});
 
 // listen for mouse events
 canvas.onmousedown = myDown;
 canvas.onmouseup = myUp;
 canvas.onmousemove = myMove;
-
-
-// draw a single rect
-function rect(x, y, w, h) {
-    ctx.beginPath();
-    ctx.rect(x, y, w, h);
-    ctx.closePath();
-    ctx.fill();
-}
 
 
 // Background image
@@ -81,6 +62,7 @@ var hero = {
 var monster = {};
 var monstersCaught = 0;
 var key = {};
+key.isDragging = false;
 
 // Handle keyboard controls
 var keysDown = {};
@@ -165,12 +147,6 @@ var render = function () {
 		ctx.drawImage(keyImage, key.x, key.y);
 	}
 
-    for (var i = 0; i < rects.length; i++) {
-        var r = rects[i];
-        ctx.fillStyle = r.fill;
-        rect(r.x, r.y, r.width, r.height);
-    }
-
 	// Score
 	ctx.fillStyle = "rgb(250, 250, 250)";
 	ctx.font = "24px Helvetica";
@@ -226,14 +202,12 @@ function myDown(e) {
 
     // test each rect to see if mouse is inside
     dragok = false;
-    for (var i = 0; i < rects.length; i++) {
-        var r = rects[i];
-        if (mx > r.x && mx < r.x + r.width && my > r.y && my < r.y + r.height) {
+    if (mx > key.x && mx < key.x + keyImage.width && my > key.y && my < key.y + keyImage.height) {
             // if yes, set that rects isDragging=true
             dragok = true;
-            r.isDragging = true;
+            key.isDragging = true;
         }
-    }
+
     // save the current mouse position
     startX = mx;
     startY = my;
@@ -248,12 +222,13 @@ function myUp(e) {
 
     // clear all the dragging flags
     dragok = false;
-    for (var i = 0; i < rects.length; i++) {
-        rects[i].isDragging = false;
+    key.isDragging = false;
+
+
+    if(key.x + keyImage.width/2 > hero.x && key.x + keyImage.width/2 < hero.x + heroImage.width && key.y + keyImage.height/2 > hero.y && key.y + keyImage.height/2 < hero.y + heroImage.height){
+        console.log('key dropped on hero !');
     }
 }
-
-//TEST BRANCHE SYLVAIN
 
 // handle mouse moves
 function myMove(e) {
@@ -276,13 +251,11 @@ function myMove(e) {
         // move each rect that isDragging
         // by the distance the mouse has moved
         // since the last mousemove
-        for (var i = 0; i < rects.length; i++) {
-            var r = rects[i];
-            if (r.isDragging) {
-                r.x += dx;
-                r.y += dy;
+        if (key.isDragging) {
+                key.x += dx;
+                key.y += dy;
             }
-        }
+
 
         // redraw the scene with the new rect positions
         render();
