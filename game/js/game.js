@@ -1,20 +1,20 @@
 // Create the canvas
 var canvas = document.createElement("canvas");
-var ctx = canvas.getContext("2d");
-canvas.width = 967;
-canvas.height = 579;
-var imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+var context = canvas.getContext("2d");
+var bgImage = new Image();
+bgImage.src = "images/background.png";
+canvas.width = bgImage.width;
+canvas.height = bgImage.height;
 document.getElementById("jeu").appendChild(canvas);
-var BB = canvas.getBoundingClientRect();
-var offsetX = BB.left;
-var offsetY = BB.top;
-var WIDTH = canvas.width;
-var HEIGHT = canvas.height;
+
 
 // drag related variables
 var dragok = false;
 var startX;
 var startY;
+var BB = canvas.getBoundingClientRect();
+var offsetX = BB.left;
+var offsetY = BB.top;
 
 
 // listen for mouse events
@@ -23,46 +23,40 @@ canvas.onmouseup = myUp;
 canvas.onmousemove = myMove;
 
 
-// Background image
-var bgReady = false;
-var bgImage = new Image();
-bgImage.onload = function () {
-	bgReady = true;
-};
-bgImage.src = "images/background.png";
-
-// Hero image
-var heroReady = false;
+// Create the hero
 var heroImage = new Image();
-heroImage.onload = function () {
-	heroReady = true;
-};
 heroImage.src = "images/hero.png";
 
-// Monster image
-var monsterReady = false;
-var monsterImage = new Image();
-monsterImage.onload = function () {
-	monsterReady = true;
-};
-monsterImage.src = "images/monster.png";
+// Create the guard
+var guardImage = new Image();
+guardImage.src = "images/monster.png";
 
-// Key image
-var keyReady = false;
+//Create the key
 var keyImage = new Image();
-keyImage.onload = function () {
-	keyReady = true;
-};
 keyImage.src = "images/key.png";
+
 
 // Game objects
 var hero = {
 	speed: 256 // movement in pixels per second
 };
-var monster = {};
-var monstersCaught = 0;
+
+var guard1 = {
+    speed: 256
+};
+
+var guard2 = {
+    speed:256
+}
+
+var guard3 ={
+    speed:256
+}
+
 var key = {};
 key.isDragging = false;
+
+
 
 // Handle keyboard controls
 var keysDown = {};
@@ -80,25 +74,12 @@ addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
 
-// Reset the game when the player catches a monster
-var reset = function () {
-	hero.x = canvas.width / 2;
-	hero.y = canvas.height / 2;
-
-	// Throw the monster somewhere on the screen randomly
-	monster.x = 32 + (Math.random() * (canvas.width - 64));
-	monster.y = 32 + (Math.random() * (canvas.height - 64));
-
-    // Throw the key somewhere on the screen randomly
-	key.x = 32 + (Math.random() * (canvas.width - 64));
-	key.y = 32 + (Math.random() * (canvas.height - 64));
-};
 
 // Update game objects
 var update = function (modifier) {
 	if (38 in keysDown) { // Player holding up
         if (isInMap('y',-10)){
-            hero.y -= hero.speed * modifier;
+          hero.y -= hero.speed * modifier;
         }
 	}
 	if (40 in keysDown) { // Player holding down
@@ -116,46 +97,9 @@ var update = function (modifier) {
 		  hero.x += hero.speed * modifier;
         }
 	}
-
-	// Are they touching?
-	if (
-		hero.x <= (monster.x + 32)
-		&& monster.x <= (hero.x + 32)
-		&& hero.y <= (monster.y + 32)
-		&& monster.y <= (hero.y + 32)
-	) {
-		++monstersCaught;
-		reset();
-	}
 };
 
-// Draw everything
-var render = function () {
-	if (bgReady) {
-		ctx.drawImage(bgImage, 0, 0);
-	}
 
-	if (heroReady) {
-		ctx.drawImage(heroImage, hero.x, hero.y);
-	}
-
-	if (monsterReady) {
-		ctx.drawImage(monsterImage, monster.x, monster.y);
-	}
-
-    if (keyReady) {
-		ctx.drawImage(keyImage, key.x, key.y);
-	}
-
-	// Score
-	ctx.fillStyle = "rgb(250, 250, 250)";
-	ctx.font = "24px Helvetica";
-	ctx.textAlign = "left";
-	ctx.textBaseline = "top";
-	ctx.fillText("Goblins caught: " + monstersCaught, 32, 32);
-};
-
-// Sylvain : borders and malls checking function
 function isInMap(position,limit) {
     var x = hero.x + heroImage.height/2;
     var y = hero.y + heroImage.width/2;
@@ -163,14 +107,14 @@ function isInMap(position,limit) {
 
 
     if (position === 'x') {
-        if(x + heroImage.height/2 > WIDTH && limit > 0)
+        if(x + heroImage.height/2 > canvas.width && limit > 0)
             return false;
         else if(x - heroImage.height/2 < 0 && limit < 0)
             return false;
         else
             x += limit;
     } else {
-        if(y + heroImage.width/2 > HEIGHT && limit > 0)
+        if(y + heroImage.width/2 > canvas.height && limit > 0)
             return false;
         else if(y - heroImage.width/2 < 0 && limit < 0)
             return false;
@@ -178,7 +122,7 @@ function isInMap(position,limit) {
             y += limit;
     }
 
-    var data = ctx.getImageData(x, y, canvas.width, canvas.height).data;
+    var data = context.getImageData(x, y, canvas.width, canvas.height).data;
     var rgb = [ data[0], data[1], data[2] ];
     //console.log(rgb);
     if (data[0] === 255 && data[1] === 51 && data[2] === 51){
@@ -191,24 +135,18 @@ function isInMap(position,limit) {
 
 // handle mousedown events
 function myDown(e) {
-
-    // tell the browser we're handling this mouse event
     e.preventDefault();
     e.stopPropagation();
 
-    // get the current mouse position
     var mx = parseInt(e.clientX - offsetX);
     var my = parseInt(e.clientY - offsetY);
 
-    // test each rect to see if mouse is inside
     dragok = false;
     if (mx > key.x && mx < key.x + keyImage.width && my > key.y && my < key.y + keyImage.height) {
-            // if yes, set that rects isDragging=true
             dragok = true;
             key.isDragging = true;
         }
 
-    // save the current mouse position
     startX = mx;
     startY = my;
 }
@@ -216,14 +154,11 @@ function myDown(e) {
 
 // handle mouseup events
 function myUp(e) {
-    // tell the browser we're handling this mouse event
     e.preventDefault();
     e.stopPropagation();
 
-    // clear all the dragging flags
     dragok = false;
     key.isDragging = false;
-
 
     if(key.x + keyImage.width/2 > hero.x && key.x + keyImage.width/2 < hero.x + heroImage.width && key.y + keyImage.height/2 > hero.y && key.y + keyImage.height/2 < hero.y + heroImage.height){
         console.log('key dropped on hero !');
@@ -232,35 +167,24 @@ function myUp(e) {
 
 // handle mouse moves
 function myMove(e) {
-    // if we're dragging anything...
     if (dragok) {
 
-        // tell the browser we're handling this mouse event
         e.preventDefault();
         e.stopPropagation();
 
-        // get the current mouse position
         var mx = parseInt(e.clientX - offsetX);
         var my = parseInt(e.clientY - offsetY);
 
-        // calculate the distance the mouse has moved
-        // since the last mousemove
         var dx = mx - startX;
         var dy = my - startY;
 
-        // move each rect that isDragging
-        // by the distance the mouse has moved
-        // since the last mousemove
         if (key.isDragging) {
                 key.x += dx;
                 key.y += dy;
             }
 
-
-        // redraw the scene with the new rect positions
         render();
 
-        // reset the starting mouse position for the next mousemove
         startX = mx;
         startY = my;
 
@@ -268,25 +192,55 @@ function myMove(e) {
 }
 
 
-// The main game loop
+// Draw background
+function render() {
+    context.drawImage(bgImage,0,0);
+    context.drawImage(heroImage,hero.x,hero.y);
+    context.drawImage(guardImage, guard1.x,guard1.y);
+    context.drawImage(guardImage,guard2.x,guard2.y);
+    context.drawImage(guardImage,guard3.x,guard3.y);
+	context.drawImage(keyImage,key.x,key.y);
+}
+
+
+// Reset position
+var reset = function () {
+	hero.x = canvas.width / 2;
+	hero.y = canvas.height / 2;
+    guard1.x=32+(Math.random()*(canvas.width-64));
+    guard1.y=32+(Math.random()*(canvas.height-64));
+    guard2.x=32+(Math.random()*(canvas.width-64));
+    guard2.y=32+(Math.random()*(canvas.height-64));
+    guard3.x=32+(Math.random()*(canvas.width-64));
+    guard3.y=32+(Math.random()*(canvas.height-64));
+	key.x=32+(Math.random()*(canvas.width-64));
+    key.y=32+(Math.random()*(canvas.height-64));
+
+};
+
+
 var main = function () {
-	var now = Date.now();
+
+    var now = Date.now();
 	var delta = now - then;
 
 	update(delta / 1000);
+
 	render();
 
-	then = now;
+    then = now;
 
-	// Request to do this again ASAP
+    // Request to do this again ASAP
 	requestAnimationFrame(main);
 };
 
-// Cross-browser support for requestAnimationFrame
+
+
 var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
-// Let's play this game!
 var then = Date.now();
 reset();
 main();
+
+
