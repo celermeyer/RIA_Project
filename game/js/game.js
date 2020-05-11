@@ -6,6 +6,7 @@ bgImage.src = "images/background.png";
 canvas.width = bgImage.width;
 canvas.height = bgImage.height;
 document.getElementById("jeu").appendChild(canvas);
+var DISTANCE_TO_BORDER = 4;
 
 
 // drag related variables
@@ -25,7 +26,7 @@ canvas.onmousemove = myMove;
 
 // Create the hero
 var heroImage = new Image();
-heroImage.src = "images/audi.png";
+heroImage.src = "images/hero.png";
 
 // Create the guard
 var guardImage = new Image();
@@ -116,27 +117,21 @@ var update = function (modifier) {
 };
 
 // Move Guards
-var moveGuards = function (guard,modifier) {
+var moveGuard = function (guard,modifier) {
     if(guard.down){
-        //console.log('down');
         if (isInMap(guard,guardImage,'y',1)){
-            //console.log('In');
           guard.y += guard.speed * modifier;
         }
         else {
-            //console.log('Out');
             guard.down=false;
             guard.right = true;
         }
     }
     if(guard.right){
-        //console.log('right');
         if (isInMap(guard,guardImage,'x',1)){
-            //console.log('In');
           guard.x += guard.speed * modifier;
         }
         else {
-            //console.log('Out');
             guard.right=false;
             guard.up = true;
         }
@@ -144,23 +139,18 @@ var moveGuards = function (guard,modifier) {
     if(guard.up){
         //console.log('up');
         if (isInMap(guard,guardImage,'y',-1)){
-            //console.log('In');
           guard.y -= guard.speed * modifier;
         }
         else {
-            //console.log('Out');
             guard.up=false;
             guard.left = true;
         }
     }
     if(guard.left){
-        //console.log('left');
         if (isInMap(guard,guardImage,'x',-1)){
-            //console.log('In');
           guard.x -= guard.speed * modifier;
         }
         else {
-            //console.log('Out');
             guard.left=false;
             guard.down = true;
         }
@@ -174,30 +164,52 @@ function isInMap(gameObject,gameImage,coordinate,direction) {
     var y = gameObject.y + gameImage.height/2;
 
     if (coordinate === 'x') {
-        if(direction === 1 && x + gameImage.width/2 > canvas.width)
+        if(direction === 1 && x + gameImage.width/2 + DISTANCE_TO_BORDER > canvas.width)
             return false;
-        else if(direction === -1 && x - gameImage.width/2 < 0)
+        else if(direction === -1 && x - gameImage.width/2 - DISTANCE_TO_BORDER < 0)
             return false;
-        else
-            x += direction*gameImage.width;
-    } else {
-        if(direction === 1 && y + gameImage.height/2 > canvas.height)
-            return false;
-        else if(direction === -1 && y - gameImage.height/2 < 0)
-            return false;
-        else
-            y += direction*gameImage.height;
-    }
+        else{
+            x += direction * (gameImage.width/2 + DISTANCE_TO_BORDER);
 
-    var data = context.getImageData(x, y, canvas.width, canvas.height).data;
-    var rgb = [ data[0], data[1], data[2] ];
-    //console.log(rgb);
-    if (data[0] === 255 && data[1] === 51 && data[2] === 51){
-        return false;
-    } else {
-        return true;
-    }
+            var y1 = gameObject.y;
+            var y2 = gameObject.y + gameImage.height;
 
+            var top = context.getImageData(x, y1, canvas.width, canvas.height).data;
+            var middle = context.getImageData(x, y, canvas.width, canvas.height).data;
+            var bottom = context.getImageData(x, y2, canvas.width, canvas.height).data;
+
+            if ((top[0] === 255 && top[1] === 51 && top[2] === 51) ||
+                (middle[0] === 255 && middle[1] === 51 && middle[2] === 51) ||
+                (bottom[0] === 255 && bottom[1] === 51 && bottom[2] === 51)){
+                return false;
+            } else {
+                return true;
+            }
+        }
+    } else {
+        if(direction === 1 && y + gameImage.height/2 + DISTANCE_TO_BORDER > canvas.height)
+            return false;
+        else if(direction === -1 && y - gameImage.height/2 - DISTANCE_TO_BORDER < 0)
+            return false;
+        else{
+            y += direction * (gameImage.height/2 + DISTANCE_TO_BORDER);
+
+            var x1 = gameObject.x;
+            var x2 = gameObject.x + gameImage.width;
+
+            var left = context.getImageData(x1, y, canvas.width, canvas.height).data;
+            var middle = context.getImageData(x, y, canvas.width, canvas.height).data;
+            var right = context.getImageData(x2, y, canvas.width, canvas.height).data;
+
+            if ((left[0] === 255 && left[1] === 51 && left[2] === 51) ||
+                (middle[0] === 255 && middle[1] === 51 && middle[2] === 51) ||
+                (right[0] === 255 && right[1] === 51 && right[2] === 51)){
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
 }
 
 
@@ -269,10 +281,6 @@ function render() {
     context.drawImage(guardImage,guard2.x,guard2.y);
     context.drawImage(guardImage,guard3.x,guard3.y);
 	context.drawImage(keyImage,key.x,key.y);
-
-    context.fillStyle = "#00FF00";
-
-    context.fillRect(hero.x + heroImage.width/2,hero.y + heroImage.height/2,2,2);
 }
 
 
@@ -297,9 +305,9 @@ var main = function () {
     var now = Date.now();
 	var delta = now - then;
 
-	moveGuards(guard1,delta/1000);
-    moveGuards(guard2,delta/1000);
-    moveGuards(guard3,delta/1000);
+	moveGuard(guard1,delta/1000);
+    moveGuard(guard2,delta/1000);
+    moveGuard(guard3,delta/1000);
 
 	update(delta/1000);
 
@@ -318,7 +326,6 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 
 var then = Date.now();
 reset();
-console.log('height: ' + heroImage.height + ' | width: ' + heroImage.width);
 main();
 
 
