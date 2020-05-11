@@ -25,7 +25,7 @@ canvas.onmousemove = myMove;
 
 // Create the hero
 var heroImage = new Image();
-heroImage.src = "images/hero.png";
+heroImage.src = "images/audi.png";
 
 // Create the guard
 var guardImage = new Image();
@@ -42,15 +42,27 @@ var hero = {
 };
 
 var guard1 = {
-    speed: 256
+    speed: 64,
+    up: false,
+    down: true,
+    left: false,
+    right: false
 };
 
 var guard2 = {
-    speed:256
+    speed:64,
+     up: false,
+    down: false,
+    left: false,
+    right: true
 }
 
 var guard3 ={
-    speed:256
+    speed:64,
+     up: true,
+    down: false,
+    left: false,
+    right: false
 }
 
 var key = {};
@@ -78,48 +90,131 @@ addEventListener("keyup", function (e) {
 // Update game objects
 var update = function (modifier) {
 	if (38 in keysDown) { // Player holding up
-        if (isInMap('y',-10)){
+        if (isInMap('y',-1)){
           hero.y -= hero.speed * modifier;
         }
 	}
 	if (40 in keysDown) { // Player holding down
-        if (isInMap('y',10)){
+        if (isInMap('y',1)){
 		  hero.y += hero.speed * modifier;
         }
 	}
 	if (37 in keysDown) { // Player holding left
-        if (isInMap('x',-10)){
+        if (isInMap('x',-1)){
 		  hero.x -= hero.speed * modifier;
         }
 	}
 	if (39 in keysDown) { // Player holding right
-        if (isInMap('x',10)){
+        if (isInMap('x',1)){
 		  hero.x += hero.speed * modifier;
         }
 	}
 };
 
+// Move Guards
+var moveGuards = function (guard,modifier) {
+    if(guard.down){
+        //console.log('down');
+        if (guardInTheMap(guard,'y',1)){
+            //console.log('In');
+          guard.y += guard.speed * modifier;
+        }
+        else {
+            //console.log('Out');
+            guard.down=false;
+            guard.right = true;
+        }
+    }
+    if(guard.right){
+        //console.log('right');
+        if (guardInTheMap(guard,'x',1)){
+            //console.log('In');
+          guard.x += guard.speed * modifier;
+        }
+        else {
+            //console.log('Out');
+            guard.right=false;
+            guard.up = true;
+        }
+    }
+    if(guard.up){
+        //console.log('up');
+        if (guardInTheMap(guard,'y',-1)){
+            //console.log('In');
+          guard.y -= guard.speed * modifier;
+        }
+        else {
+            //console.log('Out');
+            guard.up=false;
+            guard.left = true;
+        }
+    }
+    if(guard.left){
+        //console.log('left');
+        if (guardInTheMap(guard,'x',-1)){
+            //console.log('In');
+          guard.x -= guard.speed * modifier;
+        }
+        else {
+            //console.log('Out');
+            guard.left=false;
+            guard.down = true;
+        }
+    }
 
-function isInMap(position,limit) {
-    var x = hero.x + heroImage.height/2;
-    var y = hero.y + heroImage.width/2;
+};
 
 
+function isInMap(coordinate,direction) {
+    var x = hero.x + heroImage.width/2;
+    var y = hero.y + heroImage.height/2;
 
-    if (position === 'x') {
-        if(x + heroImage.height/2 > canvas.width && limit > 0)
+    if (coordinate === 'x') {
+        if(direction === 1 && x + heroImage.width/2 > canvas.width)
             return false;
-        else if(x - heroImage.height/2 < 0 && limit < 0)
+        else if(direction === -1 && x - heroImage.width/2 < 0)
             return false;
         else
-            x += limit;
+            x += direction*heroImage.width;
     } else {
-        if(y + heroImage.width/2 > canvas.height && limit > 0)
+        if(direction === 1 && y + heroImage.height/2 > canvas.height)
             return false;
-        else if(y - heroImage.width/2 < 0 && limit < 0)
+        else if(direction === -1 && y - heroImage.height/2 < 0)
             return false;
         else
-            y += limit;
+            y += direction*heroImage.height;
+    }
+
+    var data = context.getImageData(x, y, canvas.width, canvas.height).data;
+    var rgb = [ data[0], data[1], data[2] ];
+    //console.log(rgb);
+    if (data[0] === 255 && data[1] === 51 && data[2] === 51){
+        return false;
+    } else {
+        return true;
+    }
+
+}
+
+
+function guardInTheMap(guard,coordinate,direction) {
+    var x = guard.x + guardImage.width/2;
+    var y = guard.y + guardImage.height/2;
+
+    if (coordinate === 'x') {
+        if(direction === 1 && x + guardImage.width/2 > canvas.width)
+            return false;
+        else if(direction === -1 && x - guardImage.width/2 < 0)
+            return false;
+        else
+            x += direction*guardImage.width;
+    } else {
+        if(direction === 1 && y + guardImage.height/2 > canvas.height)
+            return false;
+        else if(direction === -1 && y - guardImage.height/2 < 0)
+            return false;
+        else
+            y += direction*guardImage.height;
     }
 
     var data = context.getImageData(x, y, canvas.width, canvas.height).data;
@@ -200,6 +295,10 @@ function render() {
     context.drawImage(guardImage,guard2.x,guard2.y);
     context.drawImage(guardImage,guard3.x,guard3.y);
 	context.drawImage(keyImage,key.x,key.y);
+
+    context.fillStyle = "#00FF00";
+
+    context.fillRect(hero.x + heroImage.width/2,hero.y + heroImage.height/2,2,2);
 }
 
 
@@ -207,12 +306,12 @@ function render() {
 var reset = function () {
 	hero.x = canvas.width / 2;
 	hero.y = canvas.height / 2;
-    guard1.x=32+(Math.random()*(canvas.width-64));
-    guard1.y=32+(Math.random()*(canvas.height-64));
-    guard2.x=32+(Math.random()*(canvas.width-64));
-    guard2.y=32+(Math.random()*(canvas.height-64));
-    guard3.x=32+(Math.random()*(canvas.width-64));
-    guard3.y=32+(Math.random()*(canvas.height-64));
+    guard1.x=333;
+    guard1.y=500;
+    guard2.x=160;
+    guard2.y=46;
+    guard3.x=914;
+    guard3.y=132;
 	key.x=32+(Math.random()*(canvas.width-64));
     key.y=32+(Math.random()*(canvas.height-64));
 
@@ -224,7 +323,11 @@ var main = function () {
     var now = Date.now();
 	var delta = now - then;
 
-	update(delta / 1000);
+	moveGuards(guard1,delta/1000);
+    moveGuards(guard2,delta/1000);
+    moveGuards(guard3,delta/1000);
+
+	update(delta/1000);
 
 	render();
 
@@ -241,6 +344,7 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 
 var then = Date.now();
 reset();
+console.log('height: ' + heroImage.height + ' | width: ' + heroImage.width);
 main();
 
 
