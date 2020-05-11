@@ -38,7 +38,11 @@ keyImage.src = "images/key.png";
 
 // Game objects
 var hero = {
-	speed: 256 // movement in pixels per second
+	speed: 256, // movement in pixels per second
+    up: false,
+    down: false,
+    left: false,
+    right: false
 };
 
 var guard1 = {
@@ -55,7 +59,7 @@ var guard2 = {
     down: false,
     left: false,
     right: true
-}
+};
 
 var guard3 ={
     speed:64,
@@ -63,7 +67,7 @@ var guard3 ={
     down: false,
     left: false,
     right: false
-}
+};
 
 var key = {};
 key.isDragging = false;
@@ -90,22 +94,22 @@ addEventListener("keyup", function (e) {
 // Update game objects
 var update = function (modifier) {
 	if (38 in keysDown) { // Player holding up
-        if (isInMap('y',-1)){
+        if (isInMap(hero,heroImage,'y',-1)){
           hero.y -= hero.speed * modifier;
         }
 	}
 	if (40 in keysDown) { // Player holding down
-        if (isInMap('y',1)){
+        if (isInMap(hero,heroImage,'y',1)){
 		  hero.y += hero.speed * modifier;
         }
 	}
 	if (37 in keysDown) { // Player holding left
-        if (isInMap('x',-1)){
+        if (isInMap(hero,heroImage,'x',-1)){
 		  hero.x -= hero.speed * modifier;
         }
 	}
 	if (39 in keysDown) { // Player holding right
-        if (isInMap('x',1)){
+        if (isInMap(hero,heroImage,'x',1)){
 		  hero.x += hero.speed * modifier;
         }
 	}
@@ -115,7 +119,7 @@ var update = function (modifier) {
 var moveGuards = function (guard,modifier) {
     if(guard.down){
         //console.log('down');
-        if (guardInTheMap(guard,'y',1)){
+        if (isInMap(guard,guardImage,'y',1)){
             //console.log('In');
           guard.y += guard.speed * modifier;
         }
@@ -127,7 +131,7 @@ var moveGuards = function (guard,modifier) {
     }
     if(guard.right){
         //console.log('right');
-        if (guardInTheMap(guard,'x',1)){
+        if (isInMap(guard,guardImage,'x',1)){
             //console.log('In');
           guard.x += guard.speed * modifier;
         }
@@ -139,7 +143,7 @@ var moveGuards = function (guard,modifier) {
     }
     if(guard.up){
         //console.log('up');
-        if (guardInTheMap(guard,'y',-1)){
+        if (isInMap(guard,guardImage,'y',-1)){
             //console.log('In');
           guard.y -= guard.speed * modifier;
         }
@@ -151,7 +155,7 @@ var moveGuards = function (guard,modifier) {
     }
     if(guard.left){
         //console.log('left');
-        if (guardInTheMap(guard,'x',-1)){
+        if (isInMap(guard,guardImage,'x',-1)){
             //console.log('In');
           guard.x -= guard.speed * modifier;
         }
@@ -165,24 +169,24 @@ var moveGuards = function (guard,modifier) {
 };
 
 
-function isInMap(coordinate,direction) {
-    var x = hero.x + heroImage.width/2;
-    var y = hero.y + heroImage.height/2;
+function isInMap(gameObject,gameImage,coordinate,direction) {
+    var x = gameObject.x + gameImage.width/2;
+    var y = gameObject.y + gameImage.height/2;
 
     if (coordinate === 'x') {
-        if(direction === 1 && x + heroImage.width/2 > canvas.width)
+        if(direction === 1 && x + gameImage.width/2 > canvas.width)
             return false;
-        else if(direction === -1 && x - heroImage.width/2 < 0)
+        else if(direction === -1 && x - gameImage.width/2 < 0)
             return false;
         else
-            x += direction*heroImage.width;
+            x += direction*gameImage.width;
     } else {
-        if(direction === 1 && y + heroImage.height/2 > canvas.height)
+        if(direction === 1 && y + gameImage.height/2 > canvas.height)
             return false;
-        else if(direction === -1 && y - heroImage.height/2 < 0)
+        else if(direction === -1 && y - gameImage.height/2 < 0)
             return false;
         else
-            y += direction*heroImage.height;
+            y += direction*gameImage.height;
     }
 
     var data = context.getImageData(x, y, canvas.width, canvas.height).data;
@@ -197,36 +201,6 @@ function isInMap(coordinate,direction) {
 }
 
 
-function guardInTheMap(guard,coordinate,direction) {
-    var x = guard.x + guardImage.width/2;
-    var y = guard.y + guardImage.height/2;
-
-    if (coordinate === 'x') {
-        if(direction === 1 && x + guardImage.width/2 > canvas.width)
-            return false;
-        else if(direction === -1 && x - guardImage.width/2 < 0)
-            return false;
-        else
-            x += direction*guardImage.width;
-    } else {
-        if(direction === 1 && y + guardImage.height/2 > canvas.height)
-            return false;
-        else if(direction === -1 && y - guardImage.height/2 < 0)
-            return false;
-        else
-            y += direction*guardImage.height;
-    }
-
-    var data = context.getImageData(x, y, canvas.width, canvas.height).data;
-    var rgb = [ data[0], data[1], data[2] ];
-    //console.log(rgb);
-    if (data[0] === 255 && data[1] === 51 && data[2] === 51){
-        return false;
-    } else {
-        return true;
-    }
-
-}
 
 // handle mousedown events
 function myDown(e) {
