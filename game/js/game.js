@@ -1,34 +1,22 @@
 // Create the canvas
 var canvas = document.createElement("canvas");
-var ctx = canvas.getContext("2d");
-canvas.width = 967;
-canvas.height = 579;
-var imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+var context = canvas.getContext("2d");
+var bgImage = new Image();
+bgImage.src = "images/background.png";
+canvas.width = bgImage.width;
+canvas.height = bgImage.height;
 document.getElementById("jeu").appendChild(canvas);
+var DISTANCE_TO_BORDER = 4;
 
-var BB = canvas.getBoundingClientRect();
-var offsetX = BB.left;
-console.log('offsetX : ' + offsetX);
-var offsetY = BB.top;
-console.log('offsetY : ' + offsetY);
-var WIDTH = canvas.width;
-var HEIGHT = canvas.height;
 
 // drag related variables
 var dragok = false;
 var startX;
 var startY;
+var BB = canvas.getBoundingClientRect();
+var offsetX = BB.left;
+var offsetY = BB.top;
 
-// an array of objects that define different rectangles
-var rects = [];
-rects.push({
-    x: 75 - 45,
-    y: 50 - 45,
-    width: 30,
-    height: 30,
-    fill: "#0c64e8",
-    isDragging: false
-});
 
 // listen for mouse events
 canvas.onmousedown = myDown;
@@ -36,49 +24,56 @@ canvas.onmouseup = myUp;
 canvas.onmousemove = myMove;
 
 
-// draw a single rect
-function rect(x, y, w, h) {
-    ctx.beginPath();
-    ctx.rect(x, y, w, h);
-    ctx.closePath();
-    ctx.fill();
-}
-
-// clear the canvas
-function clear() {
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
-}
-
-// Background image
-var bgReady = false;
-var bgImage = new Image();
-bgImage.onload = function () {
-	bgReady = true;
-};
-bgImage.src = "images/background.png";
-
-// Hero image
-var heroReady = false;
+// Create the hero
 var heroImage = new Image();
-heroImage.onload = function () {
-	heroReady = true;
-};
-heroImage.src = "images/hero.png";
+heroImage.src = "images/hero1.png";
 
-// Monster image
-var monsterReady = false;
-var monsterImage = new Image();
-monsterImage.onload = function () {
-	monsterReady = true;
-};
-monsterImage.src = "images/monster.png";
+// Create the guard
+var guardImage = new Image();
+guardImage.src = "images/monster.png";
+
+//Create the key
+var keyImage = new Image();
+keyImage.src = "images/key.png";
+
 
 // Game objects
 var hero = {
-	speed: 256 // movement in pixels per second
+	speed: 256, // movement in pixels per second
+    up: false,
+    down: false,
+    left: false,
+    right: false
 };
-var monster = {};
-var monstersCaught = 0;
+
+var guard1 = {
+    speed: 64,
+    up: false,
+    down: true,
+    left: false,
+    right: false
+};
+
+var guard2 = {
+    speed:64,
+     up: false,
+    down: false,
+    left: false,
+    right: true
+};
+
+var guard3 ={
+    speed:64,
+     up: true,
+    down: false,
+    left: false,
+    right: false
+};
+
+var key = {};
+key.isDragging = false;
+
+
 
 // Handle keyboard controls
 var keysDown = {};
@@ -96,139 +91,143 @@ addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
 
-// Reset the game when the player catches a monster
-var reset = function () {
-	hero.x = canvas.width / 2;
-	hero.y = canvas.height / 2;
-
-	// Throw the monster somewhere on the screen randomly
-	monster.x = 32 + (Math.random() * (canvas.width - 64));
-	monster.y = 32 + (Math.random() * (canvas.height - 64));
-};
 
 // Update game objects
 var update = function (modifier) {
 	if (38 in keysDown) { // Player holding up
-        if (isInMap('y',-10)){
-            hero.y -= hero.speed * modifier;
+        if (isInMap(hero,heroImage,'y',-1)){
+          hero.y -= hero.speed * modifier;
         }
 	}
 	if (40 in keysDown) { // Player holding down
-        if (isInMap('y',10)){
+        if (isInMap(hero,heroImage,'y',1)){
 		  hero.y += hero.speed * modifier;
         }
 	}
 	if (37 in keysDown) { // Player holding left
-        if (isInMap('x',-10)){
+        if (isInMap(hero,heroImage,'x',-1)){
 		  hero.x -= hero.speed * modifier;
         }
 	}
 	if (39 in keysDown) { // Player holding right
-        if (isInMap('x',10)){
+        if (isInMap(hero,heroImage,'x',1)){
 		  hero.x += hero.speed * modifier;
         }
 	}
-
-	// Are they touching?
-	if (
-		hero.x <= (monster.x + 32)
-		&& monster.x <= (hero.x + 32)
-		&& hero.y <= (monster.y + 32)
-		&& monster.y <= (hero.y + 32)
-	) {
-		++monstersCaught;
-		reset();
-	}
 };
 
-// Draw everything
-var render = function () {
-	if (bgReady) {
-		ctx.drawImage(bgImage, 0, 0);
-	}
-
-	if (heroReady) {
-		ctx.drawImage(heroImage, hero.x, hero.y);
-	}
-
-	if (monsterReady) {
-		ctx.drawImage(monsterImage, monster.x, monster.y);
-	}
-
-    //clear();
-    //ctx.fillStyle = "#FAF7F8";
-    //rect(0, 0, WIDTH, HEIGHT);
-    // redraw each rect in the rects[] array
-    for (var i = 0; i < rects.length; i++) {
-        var r = rects[i];
-        ctx.fillStyle = r.fill;
-        rect(r.x, r.y, r.width, r.height);
+// Move Guards
+var moveGuard = function (guard,modifier) {
+    if(guard.down){
+        if (isInMap(guard,guardImage,'y',1)){
+          guard.y += guard.speed * modifier;
+        }
+        else {
+            guard.down=false;
+            guard.right = true;
+        }
+    }
+    if(guard.right){
+        if (isInMap(guard,guardImage,'x',1)){
+          guard.x += guard.speed * modifier;
+        }
+        else {
+            guard.right=false;
+            guard.up = true;
+        }
+    }
+    if(guard.up){
+        //console.log('up');
+        if (isInMap(guard,guardImage,'y',-1)){
+          guard.y -= guard.speed * modifier;
+        }
+        else {
+            guard.up=false;
+            guard.left = true;
+        }
+    }
+    if(guard.left){
+        if (isInMap(guard,guardImage,'x',-1)){
+          guard.x -= guard.speed * modifier;
+        }
+        else {
+            guard.left=false;
+            guard.down = true;
+        }
     }
 
-	// Score
-	ctx.fillStyle = "rgb(250, 250, 250)";
-	ctx.font = "24px Helvetica";
-	ctx.textAlign = "left";
-	ctx.textBaseline = "top";
-	ctx.fillText("Goblins caught: " + monstersCaught, 32, 32);
 };
 
-// Sylvain : borders and malls checking function
-function isInMap(position,limit) {
-    var x = hero.x + heroImage.height/2;
-    var y = hero.y + heroImage.width/2;
 
+function isInMap(gameObject,gameImage,coordinate,direction) {
+    var x = gameObject.x + gameImage.width/2;
+    var y = gameObject.y + gameImage.height/2;
 
-
-    if (position === 'x') {
-        if(x + heroImage.height/2 > WIDTH && limit > 0)
+    if (coordinate === 'x') {
+        if(direction === 1 && x + gameImage.width/2 + DISTANCE_TO_BORDER > canvas.width)
             return false;
-        else if(x - heroImage.height/2 < 0 && limit < 0)
+        else if(direction === -1 && x - gameImage.width/2 - DISTANCE_TO_BORDER < 0)
             return false;
-        else
-            x += limit;
+        else{
+            x += direction * (gameImage.width/2 + DISTANCE_TO_BORDER);
+
+            var y1 = gameObject.y;
+            var y2 = gameObject.y + gameImage.height;
+
+            var top = context.getImageData(x, y1, canvas.width, canvas.height).data;
+            var middle = context.getImageData(x, y, canvas.width, canvas.height).data;
+            var bottom = context.getImageData(x, y2, canvas.width, canvas.height).data;
+
+            if ((top[0] === 255 && top[1] === 51 && top[2] === 51) ||
+                (middle[0] === 255 && middle[1] === 51 && middle[2] === 51) ||
+                (bottom[0] === 255 && bottom[1] === 51 && bottom[2] === 51)){
+                return false;
+            } else {
+                return true;
+            }
+        }
     } else {
-        if(y + heroImage.width/2 > HEIGHT && limit > 0)
+        if(direction === 1 && y + gameImage.height/2 + DISTANCE_TO_BORDER > canvas.height)
             return false;
-        else if(y - heroImage.width/2 < 0 && limit < 0)
+        else if(direction === -1 && y - gameImage.height/2 - DISTANCE_TO_BORDER < 0)
             return false;
-        else
-            y += limit;
-    }
+        else{
+            y += direction * (gameImage.height/2 + DISTANCE_TO_BORDER);
 
-    var data = ctx.getImageData(x, y, canvas.width, canvas.height).data;
-    var rgb = [ data[0], data[1], data[2] ];
-    //console.log(rgb);
-    if (data[0] === 255 && data[1] === 51 && data[2] === 51){
-        return false;
-    } else {
-        return true;
-    }
+            var x1 = gameObject.x;
+            var x2 = gameObject.x + gameImage.width;
 
+            var left = context.getImageData(x1, y, canvas.width, canvas.height).data;
+            var middle = context.getImageData(x, y, canvas.width, canvas.height).data;
+            var right = context.getImageData(x2, y, canvas.width, canvas.height).data;
+
+            if ((left[0] === 255 && left[1] === 51 && left[2] === 51) ||
+                (middle[0] === 255 && middle[1] === 51 && middle[2] === 51) ||
+                (right[0] === 255 && right[1] === 51 && right[2] === 51)){
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
 }
+
+
 
 // handle mousedown events
 function myDown(e) {
-
-    // tell the browser we're handling this mouse event
     e.preventDefault();
     e.stopPropagation();
 
-    // get the current mouse position
     var mx = parseInt(e.clientX - offsetX);
     var my = parseInt(e.clientY - offsetY);
 
-    // test each rect to see if mouse is inside
     dragok = false;
-    for (var i = 0; i < rects.length; i++) {
-        var r = rects[i];
-        if (mx > r.x && mx < r.x + r.width && my > r.y && my < r.y + r.height) {
-            // if yes, set that rects isDragging=true
+    if (mx > key.x && mx < key.x + keyImage.width && my > key.y && my < key.y + keyImage.height) {
             dragok = true;
-            r.isDragging = true;
+            key.isDragging = true;
         }
-    }
-    // save the current mouse position
+
     startX = mx;
     startY = my;
 }
@@ -236,51 +235,37 @@ function myDown(e) {
 
 // handle mouseup events
 function myUp(e) {
-    // tell the browser we're handling this mouse event
     e.preventDefault();
     e.stopPropagation();
 
-    // clear all the dragging flags
     dragok = false;
-    for (var i = 0; i < rects.length; i++) {
-        rects[i].isDragging = false;
+    key.isDragging = false;
+
+    if(key.x + keyImage.width/2 > hero.x && key.x + keyImage.width/2 < hero.x + heroImage.width && key.y + keyImage.height/2 > hero.y && key.y + keyImage.height/2 < hero.y + heroImage.height){
+        console.log('key dropped on hero !');
     }
 }
 
-
 // handle mouse moves
 function myMove(e) {
-    // if we're dragging anything...
     if (dragok) {
 
-        // tell the browser we're handling this mouse event
         e.preventDefault();
         e.stopPropagation();
 
-        // get the current mouse position
         var mx = parseInt(e.clientX - offsetX);
         var my = parseInt(e.clientY - offsetY);
 
-        // calculate the distance the mouse has moved
-        // since the last mousemove
         var dx = mx - startX;
         var dy = my - startY;
 
-        // move each rect that isDragging
-        // by the distance the mouse has moved
-        // since the last mousemove
-        for (var i = 0; i < rects.length; i++) {
-            var r = rects[i];
-            if (r.isDragging) {
-                r.x += dx;
-                r.y += dy;
+        if (key.isDragging) {
+                key.x += dx;
+                key.y += dy;
             }
-        }
 
-        // redraw the scene with the new rect positions
         render();
 
-        // reset the starting mouse position for the next mousemove
         startX = mx;
         startY = my;
 
@@ -288,25 +273,59 @@ function myMove(e) {
 }
 
 
-// The main game loop
+// Draw background
+function render() {
+    context.drawImage(bgImage,0,0);
+    context.drawImage(heroImage,hero.x,hero.y);
+    context.drawImage(guardImage, guard1.x,guard1.y);
+    context.drawImage(guardImage,guard2.x,guard2.y);
+    context.drawImage(guardImage,guard3.x,guard3.y);
+	context.drawImage(keyImage,key.x,key.y);
+}
+
+
+// Reset position
+var reset = function () {
+	hero.x = canvas.width / 2;
+	hero.y = canvas.height / 2;
+    guard1.x=333;
+    guard1.y=500;
+    guard2.x=160;
+    guard2.y=46;
+    guard3.x=914;
+    guard3.y=132;
+	key.x=32+(Math.random()*(canvas.width-64));
+    key.y=32+(Math.random()*(canvas.height-64));
+
+};
+
+
 var main = function () {
-	var now = Date.now();
+
+    var now = Date.now();
 	var delta = now - then;
 
-	update(delta / 1000);
+	moveGuard(guard1,delta/1000);
+    moveGuard(guard2,delta/1000);
+    moveGuard(guard3,delta/1000);
+
+	update(delta/1000);
+
 	render();
 
-	then = now;
+    then = now;
 
-	// Request to do this again ASAP
+    // Request to do this again ASAP
 	requestAnimationFrame(main);
 };
 
-// Cross-browser support for requestAnimationFrame
+
+
 var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
-// Let's play this game!
 var then = Date.now();
 reset();
 main();
+
+
