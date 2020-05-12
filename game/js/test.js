@@ -15,7 +15,7 @@ document.getElementById("jeu").appendChild(canvas);
 
 // Create the hero
 var heroImage = new Image();
-heroImage.src = "images/hero.png";
+heroImage.src = "images/hero1.png";
 
 
 // Game objects

@@ -178,9 +178,9 @@ function isInMap(gameObject,gameImage,coordinate,direction) {
             var middle = context.getImageData(x, y, canvas.width, canvas.height).data;
             var bottom = context.getImageData(x, y2, canvas.width, canvas.height).data;
 
-            if ((top[0] === 255 && top[1] === 51 && top[2] === 51) ||
-                (middle[0] === 255 && middle[1] === 51 && middle[2] === 51) ||
-                (bottom[0] === 255 && bottom[1] === 51 && bottom[2] === 51)){
+            if ((top[0] === 51 && top[1] === 0 && top[2] === 0) ||
+                (middle[0] === 51 && middle[1] === 0 && middle[2] === 0) ||
+                (bottom[0] === 51 && bottom[1] === 0 && bottom[2] === 0)){
                 return false;
             } else {
                 return true;
@@ -201,9 +201,9 @@ function isInMap(gameObject,gameImage,coordinate,direction) {
             var middle = context.getImageData(x, y, canvas.width, canvas.height).data;
             var right = context.getImageData(x2, y, canvas.width, canvas.height).data;
 
-            if ((left[0] === 255 && left[1] === 51 && left[2] === 51) ||
-                (middle[0] === 255 && middle[1] === 51 && middle[2] === 51) ||
-                (right[0] === 255 && right[1] === 51 && right[2] === 51)){
+            if ((left[0] === 51 && left[1] === 0 && left[2] === 0) ||
+                (middle[0] === 51 && middle[1] === 0 && middle[2] === 0) ||
+                (right[0] === 51 && right[1] === 0 && right[2] === 0)){
                 return false;
             } else {
                 return true;
