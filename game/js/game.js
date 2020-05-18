@@ -262,7 +262,6 @@ function checkProximity (guard,hero){
          reset();
     }
 
-
 }
 
 
