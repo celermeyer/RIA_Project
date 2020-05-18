@@ -39,35 +39,22 @@ keyImage.src = "images/key.png";
 
 // Game objects
 var hero = {
-	speed: 256, // movement in pixels per second
-    up: false,
-    down: false,
-    left: false,
-    right: false
+	speed: 150, // movement in pixels per second
 };
 
 var guard1 = {
     speed: 64,
-    up: false,
-    down: true,
-    left: false,
-    right: false
+    direction: 0
 };
 
 var guard2 = {
     speed:64,
-     up: false,
-    down: false,
-    left: false,
-    right: true
+    direction: 0
 };
 
 var guard3 ={
     speed:64,
-     up: true,
-    down: false,
-    left: false,
-    right: false
+    direction: 0
 };
 
 var key = {};
@@ -118,43 +105,49 @@ var update = function (modifier) {
 
 // Move Guards
 var moveGuard = function (guard,modifier) {
-    if(guard.down){
-        if (isInMap(guard,guardImage,'y',1)){
-          guard.y += guard.speed * modifier;
-        }
-        else {
-            guard.down=false;
-            guard.right = true;
-        }
+
+    if(guard.direction==0){
+        guard.direction = Math.floor(Math.random()*4)+1;
     }
-    if(guard.right){
-        if (isInMap(guard,guardImage,'x',1)){
-          guard.x += guard.speed * modifier;
-        }
-        else {
-            guard.right=false;
-            guard.up = true;
-        }
+
+    switch(guard.direction){
+        case 1:
+            if (isInMap(guard,guardImage,'y',1)){
+                guard.y += guard.speed * modifier;
+            }
+            else{
+                guard.direction=0;
+            }
+            break;
+
+        case 2:
+            if (isInMap(guard,guardImage,'x',1)){
+                guard.x += guard.speed * modifier;
+            }
+            else{
+                guard.direction=0;
+            }
+            break;
+
+        case 3:
+            if (isInMap(guard,guardImage,'y',-1)){
+                guard.y -= guard.speed * modifier;
+            }
+            else{
+                guard.direction=0;
+            }
+            break;
+
+        case 4:
+            if (isInMap(guard,guardImage,'x',-1)){
+                guard.x -= guard.speed * modifier;
+            }
+            else{
+                guard.direction=0;
+            }
+
     }
-    if(guard.up){
-        //console.log('up');
-        if (isInMap(guard,guardImage,'y',-1)){
-          guard.y -= guard.speed * modifier;
-        }
-        else {
-            guard.up=false;
-            guard.left = true;
-        }
-    }
-    if(guard.left){
-        if (isInMap(guard,guardImage,'x',-1)){
-          guard.x -= guard.speed * modifier;
-        }
-        else {
-            guard.left=false;
-            guard.down = true;
-        }
-    }
+
 
 };
 
@@ -210,6 +203,66 @@ function isInMap(gameObject,gameImage,coordinate,direction) {
             }
         }
     }
+}
+
+function checkProximity (guard,hero){
+
+    var attrape = false;
+
+    var posxmin;
+    var posxmax;
+
+    var posymin;
+    var posymax;
+
+    if(guard.x-hero.x<80 && guard.x-hero.x>-80 && guard.y-hero.y<80 && guard.y-hero.y>-80){
+
+        attrape = true;
+
+        if(guard.x<hero.x){
+            posxmin = guard.x;
+            posxmax = hero.x;
+        }
+        else{
+            posxmin = hero.x;
+            posxmax = guard.x
+        }
+
+        if(guard.y<hero.y){
+            posymin = guard.y;
+            posymax = hero.y;
+        }
+        else{
+            posymin = hero.y;
+            posymax = guard.y;
+        }
+
+        while(posxmin < posxmax || posymin < posymax) {
+
+                console.log("Test de la couleur à la position: x="+posxmin+" y="+posymin);
+
+                var imageData = context.getImageData(posxmin, posymin, canvas.width, canvas.height).data;
+
+                console.log(imageData[0] + "," + imageData[1] + "," + imageData[2]);
+
+                if (imageData[0] === 51 && imageData[1] === 0 && imageData[2] === 0){
+                    attrape=false;
+                }
+
+
+            posxmin += 5;
+            posymin += 5;
+        }
+
+
+
+    }
+
+    if (attrape == true){
+         reset();
+    }
+
+
 }
 
 
@@ -308,6 +361,9 @@ var main = function () {
 	moveGuard(guard1,delta/1000);
     moveGuard(guard2,delta/1000);
     moveGuard(guard3,delta/1000);
+    checkProximity(guard1,hero);
+    checkProximity(guard2,hero);
+    checkProximity(guard3,hero);
 
 	update(delta/1000);
 
