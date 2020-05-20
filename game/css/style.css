@@ -1,0 +1,70 @@
+/********************************************
+GENERAL
+********************************************/
+
+.container {
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+.background {
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+
+.backbutton {
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
+}
+
+
+
+/********************************************
+MAIN MENU
+********************************************/
+
+
+.buttonmenu {
+    position: absolute;
+    left: 60px;
+}
+
+
+#playButton{
+    top: 215px;
+}
+
+
+#rulesButton{
+    top: 324px;
+}
+
+#hofButton{
+    top: 433px;
+}
+
+
+/********************************************
+LEVEL SELECTION
+********************************************/
+
+.herooption {
+      position: absolute;
+      bottom: 60px;
+}
+
+#hero1 {
+    left: 140px;
+}
+
+#hero2 {
+    left: 420px;
+}
+
+#hero3 {
+    left: 690px;
+}
