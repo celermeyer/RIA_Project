@@ -1,45 +1,54 @@
 <!doctype html>
 <html>
 <head>
-    <title>624-2 - HTML/CSS/JavaScript</title>
+    <title>Espace The Jail</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../ressources/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header>
-    <h1>HES-SO Vs - 624-2 - HTML/CSS/JavaScript</h1>
-    <nav>
-        <!-- Hamburger -->
-        <ul>
-            <li class="hamburger">
-                <img src="../ressources/images/hamburger_icon.svg">
-            </li>
-            <li>
-                <a href="../description_start.html">Description</a>
-            </li>
-            <li>
-                <a href="../maquettes_start.html">Maquettes</a>
-            </li>
-            <li>
-                <a href="../mockup_start.html">Mockup</a>
-            </li>
-            <li>
-                <a href="../flux_start.html">Flux</a>
-            </li>
-            <li>
-                <a href="../journal_de_bord_start.html">Journal de bord</a>
-            </li>
-			<li class="active">
-                <a href="index.html">Jouer au jeu</a>
-            </li>
-        </ul>
-    </nav>
+    <h1>Escape The Jail</h1>
+    <p>Escape the jail as fast as you can !</p>
 </header>
 
 <main>
-    <!-- Début zone pour votre contenu -->
+    <div class="container" id="canvas-game">
+
+        <div id="game">
+            <script src="js/game.js"></script>
+        </div>
+
+        <div id="mainmenu">
+                <img class="background" src="images/start_background.png"/>
+                <img id="playButton" class="buttonmenu" src="images/button-play.png" onclick="displayLevelSelection()"/>
+                <img id="rulesButton" class="buttonmenu" src="images/button-regles.png" onclick="displayRules()"/>
+                <img id="hofButton" class="buttonmenu" src="images/button-score.png" onclick="displayHOF()"/>
+        </div>
+
+        <div id="levelselection">
+                <img class="background" src="images/selection_background.png"/>
+                <img id="hero1" class="herooption" src="images/selection_hero1.png" onclick="launchGame('level1')"/>
+                <img id="hero2" class="herooption" src="images/selection_hero2.png" onclick="launchGame('level2')"/>
+                <img id="hero3" class="herooption" src="images/selection_hero3.png" onclick="startGame('level3')"/>
+                <img class="backbutton" src="images/backbutton.png" onclick="displayMenu()"/>
+        </div>
+
+
+        <div id="rules">
+                <img class="background" src="images/rules_background.png"/>
+                <img class="backbutton" src="images/backbutton.png" onclick="displayMenu()"/>
+        </div>
+
+
+        <div id="hallOfFame">
+                <img class="background" src="images/halloffame_background.png"/>
+                <img class="backbutton" src="images/backbutton.png" onclick="displayMenu()"/>
+        </div>
+
+    </div>
+
     <section id="articles">
         <article id="jeu">
             <header>
@@ -52,10 +61,44 @@
     </section>
     <!-- >Fin zone pour votre contenu -->
 </main>
+
+
+<script>
+    function displayMenu(){
+        document.getElementById("mainmenu").style.display = "";
+        document.getElementById("game").style.display = "none";
+        document.getElementById("levelselection").style.display = "none";
+        document.getElementById("rules").style.display = "none";
+        document.getElementById("hallOfFame").style.display = "none";
+    }
+
+    function displayLevelSelection (){
+        document.getElementById("mainmenu").style.display = "none";
+        document.getElementById("game").style.display = "none";
+        document.getElementById("levelselection").style.display = "";
+        document.getElementById("rules").style.display = "none";
+        document.getElementById("hallOfFame").style.display = "none";
+    }
     
-    <footer>
-        <img id="logo" src="../ressources/images/logo.png">
-    </footer>
+    function displayRules (){
+        document.getElementById("mainmenu").style.display = "none";
+        document.getElementById("game").style.display = "none";
+        document.getElementById("levelselection").style.display = "none";
+        document.getElementById("rules").style.display = "";
+        document.getElementById("hallOfFame").style.display = "none";
+    }
+
+    function displayHOF (){
+        document.getElementById("mainmenu").style.display = "none";
+        document.getElementById("game").style.display = "none";
+        document.getElementById("levelselection").style.display = "none";
+        document.getElementById("rules").style.display = "none";
+        document.getElementById("hallOfFame").style.display = "";
+    }
+
+    window.onload = displayMenu;
+
+</script>
 
 </body>
 </html>
