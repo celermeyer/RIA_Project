@@ -474,8 +474,8 @@ var reset = function () {
     guard1.y = 500;
     guard2.x = 160;
     guard2.y = 46;
-    guard3.x = 914;
-    guard3.y = 132;
+    guard3.x = 790;
+    guard3.y = 10;
     key.x = 32 + (Math.random() * (canvas.width - 64));
     key.y = 32 + (Math.random() * (canvas.height - 64));
 
