@@ -2,17 +2,21 @@
 VARIABLES
 **********************************************************/
 
-var DISTANCE_TO_BORDER = 4;
+const DISTANCE_TO_BORDER = 4;
 var introduction = false;
 var apparition = false;
 var playing = false;
 var level1 = false;
 var level2 = false;
 var level3 = false;
+
+var heroIsCaught = false;
+var heroCaughtX = 0;
+var heroCaughtY = 0;
+var attempts = 5;
+
 var pause1 = 200;
 var pause2 = 200;
-
-
 
 
 
@@ -203,6 +207,24 @@ guardImage.onload = function () {
     guardReady = true;
 };
 guardImage.src = "images/monster.png";
+
+
+//Guard angry
+var guardAngryReady = false;
+var guardAngryImage = new Image();
+guardAngryImage.onload = function () {
+    guardAngryReady = true;
+};
+guardAngryImage.src = "images/guard_angry.png";
+
+
+//Heart
+var heartReady = false;
+var heartImage = new Image();
+heartImage.onload = function () {
+    heartReady = true;
+};
+heartImage.src = "images/heart.png";
 
 
 var guard1 = {
@@ -455,9 +477,33 @@ function checkProximity(guard, hero) {
         }
     }
 
-    if (attrape == true) {
-        reset();
+
+    if (attrape == true)
+        heroCaught(guard);
+}
+
+
+function setPlaying(bool){
+    playing=bool;
+}
+
+function heroCaught(guard){
+    heroIsCaught = true;
+    heroCaughtX = guard.x;
+    heroCaughtY = guard.y;
+    setPlaying(false);
+    attempts--;
+    if(attempts===0){
+        console.log('You lost');
     }
+    else {
+        setTimeout(reset,3000);
+        setTimeout(setPlaying,3000,true);
+
+   /* if (attrape == true) {
+        reset();
+       
+    }*/
 }
 
 
@@ -468,6 +514,7 @@ DRAW EVERYTHING
 
 // Reset positions
 var reset = function () {
+    heroIsCaught = false;
     hero.x = canvas.width / 2;
     hero.y = canvas.height / 2;
     guard1.x = 333;
@@ -478,7 +525,6 @@ var reset = function () {
     guard3.y = 10;
     key.x = 32 + (Math.random() * (canvas.width - 64));
     key.y = 32 + (Math.random() * (canvas.height - 64));
-
 };
 
 
@@ -511,15 +557,28 @@ var render = function () {
         ctx.drawImage(bulle1Image, bulle1.x, bulle1.y);
     }
 
-     if (bulle2Ready) {
+    if (bulle2Ready) {
         ctx.drawImage(bulle2Image, bulle2.x, bulle2.y);
     }
 
+    if (heroIsCaught){
+        ctx.drawImage(guardAngryImage,heroCaughtX,heroCaughtY);
+    }
+
+    drawAttempts();
 };
 
-
-
-
+  
+function drawAttempts(){
+    if(heartReady){
+        var x = 10;
+        var i;
+        for (i = 0; i < attempts; i++) {
+            ctx.drawImage(heartImage,x,2);
+            x += 25;
+        }
+    }
+}
 
 
 /********************************************************
@@ -531,17 +590,15 @@ var main = function () {
 
     var modifier = delta / 1000;
 
+    if(playing){
+        update(modifier);
+    }
+
     if (introduction) {
         startAnimation(delta / 200);
     }
 
-
-    if (playing) {
-        update(modifier);
-    }
-
     render();
-
 
     then = now;
     // Request to do this again ASAP
@@ -577,6 +634,11 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 PLAY
 ********************************************************/
 
+function startGame(level){
+    setPlaying(true);
+}
+
+  
 function launchGame(level) {
     switch (level) {
         case "level1":
@@ -608,11 +670,6 @@ function launchGame(level) {
 
     introduction = true;
     apparition = true;
-}
-
-
-function startGame(level) {
-    playing = true;
 }
 
 
