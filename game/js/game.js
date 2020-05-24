@@ -13,10 +13,12 @@ var level3 = false;
 var heroIsCaught = false;
 var heroCaughtX = 0;
 var heroCaughtY = 0;
-var attempts = 5;
+var attempts = 3;
 
 var pause1 = 200;
 var pause2 = 200;
+
+var timer = 0;
 
 
 
@@ -147,6 +149,15 @@ bgImage.onload = function () {
     bgReady = true;
 };
 bgImage.src = "images/background.png";
+
+
+//Barreaux (défaite)
+var barreauxReady = false;
+var barreauxImage = new Image();
+barreauxImage.onload = function () {
+    barreauxReady = true;
+};
+barreauxImage.src = "images/barreaux.png"
 
 
 
@@ -483,27 +494,23 @@ function checkProximity(guard, hero) {
 }
 
 
-function setPlaying(bool){
-    playing=bool;
+function setPlaying(bool) {
+    playing = bool;
 }
 
-function heroCaught(guard){
+
+function heroCaught(guard) {
     heroIsCaught = true;
     heroCaughtX = guard.x;
     heroCaughtY = guard.y;
     setPlaying(false);
     attempts--;
-    if(attempts===0){
-        console.log('You lost');
+    if (attempts === 0) {
+        stopGame(false);
+    } else {
+        setTimeout(reset, 3000);
+        setTimeout(setPlaying, 3000, true);
     }
-    else {
-        setTimeout(reset,3000);
-        setTimeout(setPlaying,3000,true);
-
-   /* if (attrape == true) {
-        reset();
-       
-    }*/
 }
 
 
@@ -515,8 +522,8 @@ DRAW EVERYTHING
 // Reset positions
 var reset = function () {
     heroIsCaught = false;
-    hero.x = canvas.width / 2;
-    hero.y = canvas.height / 2;
+    hero.x = 75;
+    hero.y = 460;
     guard1.x = 333;
     guard1.y = 500;
     guard2.x = 160;
@@ -561,23 +568,40 @@ var render = function () {
         ctx.drawImage(bulle2Image, bulle2.x, bulle2.y);
     }
 
-    if (heroIsCaught){
-        ctx.drawImage(guardAngryImage,heroCaughtX,heroCaughtY);
+    if (heroIsCaught) {
+        ctx.drawImage(guardAngryImage, heroCaughtX, heroCaughtY);
     }
 
     drawAttempts();
+
+    drawTimer(timer);
+
 };
 
-  
-function drawAttempts(){
-    if(heartReady){
+
+function drawAttempts() {
+    if (heartReady) {
         var x = 10;
         var i;
         for (i = 0; i < attempts; i++) {
-            ctx.drawImage(heartImage,x,2);
+            ctx.drawImage(heartImage, x, 2);
             x += 25;
         }
     }
+}
+
+function drawTimer(timer) {
+
+    var minutes = timer / 60000;
+    var secondes = (minutes - Math.floor(minutes)) * 60;
+
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+
+    if(Math.floor(secondes) < 10)
+        ctx.fillText(Math.floor(minutes) + ":0" + Math.floor(secondes), 10, 50);
+    else
+        ctx.fillText(Math.floor(minutes) + ":" + Math.floor(secondes), 10, 50);
 }
 
 
@@ -590,13 +614,20 @@ var main = function () {
 
     var modifier = delta / 1000;
 
-    if(playing){
+    if (playing) {
         update(modifier);
+
+        //incrémenter le timer
+        timer += delta;
+
+        var minutes = timer / 60000;
+
     }
 
     if (introduction) {
         startAnimation(delta / 200);
     }
+
 
     render();
 
@@ -616,7 +647,7 @@ var update = function (modifier) {
     checkProximity(guard1, hero);
     checkProximity(guard2, hero);
     checkProximity(guard3, hero);
-}
+};
 
 
 
@@ -631,15 +662,22 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 
 
 /********************************************************
-PLAY
+PLAY AND STOP
 ********************************************************/
 
-function startGame(level){
+function startGame(level) {
     setPlaying(true);
 }
 
-  
+function restartGame() {
+    setPlaying(true);
+
+    document.getElementById("game").style.display = "";
+    document.getElementById("lose").style.display = "none";
+}
+
 function launchGame(level) {
+    console.log("launchgame");
     switch (level) {
         case "level1":
             level1 = true;
@@ -670,6 +708,35 @@ function launchGame(level) {
 
     introduction = true;
     apparition = true;
+
+}
+
+
+function stopGame(victory) {
+    setPlaying(false);
+
+    if(victory){
+        console.log("you win");
+                //    document.getElementById("lose").value = "nornhgkjnre";
+    }
+    else{
+        document.getElementById("game").style.display = "none";
+        document.getElementById("lose").style.display = "";
+    }
+
+    pause1 = 200;
+    pause2 = 200;
+
+    timer = 0;
+
+    bulle1.x = -450;
+    bulle1.y = 100;
+
+    bulle2.x = -450;
+    bulle2.y = 100;
+
+    attempts = 3;
+    reset();
 }
 
 
