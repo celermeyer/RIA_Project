@@ -2,13 +2,23 @@
 VARIABLES
 **********************************************************/
 
-var DISTANCE_TO_BORDER = 4;
+const DISTANCE_TO_BORDER = 4;
+var introduction = false;
+var apparition = false;
 var playing = false;
 var level1 = false;
 var level2 = false;
 var level3 = false;
 
+var heroIsCaught = false;
+var heroCaughtX = 0;
+var heroCaughtY = 0;
+var attempts = 3;
 
+var pause1 = 200;
+var pause2 = 200;
+
+var timer = 0;
 
 
 
@@ -36,13 +46,13 @@ addEventListener("keydown", function (e) {
     keysDown[e.keyCode] = true;
 
     // Lock scroll
-    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+    if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
         e.preventDefault();
     }
 }, false);
 
 addEventListener("keyup", function (e) {
-	delete keysDown[e.keyCode];
+    delete keysDown[e.keyCode];
 }, false);
 
 
@@ -76,9 +86,9 @@ function myDown(e) {
 
     dragok = false;
     if (mx > key.x && mx < key.x + keyImage.width && my > key.y && my < key.y + keyImage.height) {
-            dragok = true;
-            key.isDragging = true;
-        }
+        dragok = true;
+        key.isDragging = true;
+    }
 
     startX = mx;
     startY = my;
@@ -93,7 +103,7 @@ function myUp(e) {
     dragok = false;
     key.isDragging = false;
 
-    if(key.x + keyImage.width/2 > hero.x && key.x + keyImage.width/2 < hero.x + heroImage.width && key.y + keyImage.height/2 > hero.y && key.y + keyImage.height/2 < hero.y + heroImage.height){
+    if (key.x + keyImage.width / 2 > hero.x && key.x + keyImage.width / 2 < hero.x + heroImage.width && key.y + keyImage.height / 2 > hero.y && key.y + keyImage.height / 2 < hero.y + heroImage.height) {
         console.log('key dropped on hero !');
     }
 }
@@ -112,9 +122,9 @@ function myMove(e) {
         var dy = my - startY;
 
         if (key.isDragging) {
-                key.x += dx;
-                key.y += dy;
-            }
+            key.x += dx;
+            key.y += dy;
+        }
 
         render();
 
@@ -123,12 +133,6 @@ function myMove(e) {
 
     }
 }
-
-
-
-/********************************************************
-BEFORE THE GAME
-********************************************************/
 
 
 
@@ -147,6 +151,15 @@ bgImage.onload = function () {
 bgImage.src = "images/background.png";
 
 
+//Barreaux (défaite)
+var barreauxReady = false;
+var barreauxImage = new Image();
+barreauxImage.onload = function () {
+    barreauxReady = true;
+};
+barreauxImage.src = "images/barreaux.png"
+
+
 
 //Hero
 var heroReady = false;
@@ -156,7 +169,44 @@ heroImage.onload = function () {
 };
 
 var hero = {
-	speed: 125, // movement in pixels per second
+    speed: 125, // movement in pixels per second
+};
+
+
+
+//Introduction
+
+var introHeroReady = false;
+var introHeroImage = new Image();
+introHeroImage.onload = function () {
+    introHeroReady = true;
+}
+
+var introHero = {
+    y: 350,
+    x: -200,
+};
+
+var bulle1Ready = false;
+var bulle1Image = new Image();
+bulle1Image.onload = function () {
+    bulle1Ready = true;
+}
+
+var bulle1 = {
+    y: 100,
+    x: -450,
+};
+
+var bulle2Ready = false;
+var bulle2Image = new Image();
+bulle2Image.onload = function () {
+    bulle2Ready = true;
+}
+
+var bulle2 = {
+    y: 100,
+    x: -450,
 };
 
 
@@ -170,18 +220,36 @@ guardImage.onload = function () {
 guardImage.src = "images/monster.png";
 
 
+//Guard angry
+var guardAngryReady = false;
+var guardAngryImage = new Image();
+guardAngryImage.onload = function () {
+    guardAngryReady = true;
+};
+guardAngryImage.src = "images/guard_angry.png";
+
+
+//Heart
+var heartReady = false;
+var heartImage = new Image();
+heartImage.onload = function () {
+    heartReady = true;
+};
+heartImage.src = "images/heart.png";
+
+
 var guard1 = {
     speed: 64,
     direction: 0
 };
 
 var guard2 = {
-    speed:64,
+    speed: 64,
     direction: 0
 };
 
-var guard3 ={
-    speed:64,
+var guard3 = {
+    speed: 64,
     direction: 0
 };
 
@@ -199,6 +267,57 @@ key.isDragging = false;
 
 
 
+
+/********************************************************
+BEFORE THE GAME
+********************************************************/
+
+//Start introduction animation
+
+var startAnimation = function (modifier) {
+    if (apparition) {
+        if (introHero.x < 0)
+            introHero.x += 100 * modifier;
+        if (introHero.x >= 0)
+            apparition = false;
+    }
+
+    if (!apparition) {
+        if (bulle1.x < 200) {
+            bulle1.x += 100 * modifier;
+        } else {
+            if (pause1 > 0) {
+                pause1 -= 1;
+            } else {
+                if (bulle1.y > -330) {
+                    bulle1.y -= 100 * modifier;
+                }
+                if (bulle2.x < 200) {
+                    bulle2.x += 100 * modifier;
+                } else {
+                    if (pause2 > 0) {
+                        pause2 -= 1;
+                    } else {
+                        if (bulle2.y > -330) {
+                            bulle2.y -= 100 * modifier;
+                        }
+                        if (introHero.x > -200) {
+                            introHero.x -= 100 * modifier;
+                        } else if (bulle2.y <= -330) {
+                            introduction = false;
+                            playing = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+
+
+
 /********************************************************
 UPDATE AND MOVE OBJECTS
 ********************************************************/
@@ -206,68 +325,64 @@ UPDATE AND MOVE OBJECTS
 // Move hero
 var moveHero = function (modifier) {
 
-	if (38 in keysDown) { // Player holding up
-        if (isInMap(hero,heroImage,'y',-1)){
-          hero.y -= hero.speed * modifier;
+    if (38 in keysDown) { // Player holding up
+        if (isInMap(hero, heroImage, 'y', -1)) {
+            hero.y -= hero.speed * modifier;
         }
-	}
-	if (40 in keysDown) { // Player holding down
-        if (isInMap(hero,heroImage,'y',1)){
-		  hero.y += hero.speed * modifier;
+    }
+    if (40 in keysDown) { // Player holding down
+        if (isInMap(hero, heroImage, 'y', 1)) {
+            hero.y += hero.speed * modifier;
         }
-	}
-	if (37 in keysDown) { // Player holding left
-        if (isInMap(hero,heroImage,'x',-1)){
-		  hero.x -= hero.speed * modifier;
+    }
+    if (37 in keysDown) { // Player holding left
+        if (isInMap(hero, heroImage, 'x', -1)) {
+            hero.x -= hero.speed * modifier;
         }
-	}
-	if (39 in keysDown) { // Player holding right
-        if (isInMap(hero,heroImage,'x',1)){
-		  hero.x += hero.speed * modifier;
+    }
+    if (39 in keysDown) { // Player holding right
+        if (isInMap(hero, heroImage, 'x', 1)) {
+            hero.x += hero.speed * modifier;
         }
-	}
+    }
 };
 
 
 
 // Move Guards
-var moveGuard = function (guard,modifier) {
+var moveGuard = function (guard, modifier) {
 
-    if(guard.direction==0){
-        guard.direction = Math.floor(Math.random()*4)+1;
+    if (guard.direction == 0) {
+        guard.direction = Math.floor(Math.random() * 4) + 1;
     }
 
-    switch(guard.direction){
+    switch (guard.direction) {
         case 1:
-            if (isInMap(guard,guardImage,'y',1)){
+            if (isInMap(guard, guardImage, 'y', 1)) {
                 guard.y += guard.speed * modifier;
-            }
-            else{
-                guard.direction=0;
+            } else {
+                guard.direction = 0;
             }
             break;
         case 2:
-            if (isInMap(guard,guardImage,'x',1)){
+            if (isInMap(guard, guardImage, 'x', 1)) {
                 guard.x += guard.speed * modifier;
-            }
-            else{
-                guard.direction=0;
+            } else {
+                guard.direction = 0;
             }
             break;
         case 3:
-            if (isInMap(guard,guardImage,'y',-1)){
+            if (isInMap(guard, guardImage, 'y', -1)) {
                 guard.y -= guard.speed * modifier;
-            }
-            else{
-                guard.direction=0;
+            } else {
+                guard.direction = 0;
             }
             break;
         case 4:
-            if (isInMap(guard,guardImage,'x',-1)){
+            if (isInMap(guard, guardImage, 'x', -1)) {
                 guard.x -= guard.speed * modifier;
-            }
-            else{
-                guard.direction=0;
+            } else {
+                guard.direction = 0;
             }
     }
 };
@@ -275,17 +390,17 @@ var moveGuard = function (guard,modifier) {
 
 
 //Check for borders and walls
-function isInMap(gameObject,gameImage,coordinate,direction) {
-    var x = gameObject.x + gameImage.width/2;
-    var y = gameObject.y + gameImage.height/2;
+function isInMap(gameObject, gameImage, coordinate, direction) {
+    var x = gameObject.x + gameImage.width / 2;
+    var y = gameObject.y + gameImage.height / 2;
 
     if (coordinate === 'x') {
-        if(direction === 1 && x + gameImage.width/2 + DISTANCE_TO_BORDER > canvas.width)
+        if (direction === 1 && x + gameImage.width / 2 + DISTANCE_TO_BORDER > canvas.width)
             return false;
-        else if(direction === -1 && x - gameImage.width/2 - DISTANCE_TO_BORDER < 0)
+        else if (direction === -1 && x - gameImage.width / 2 - DISTANCE_TO_BORDER < 0)
             return false;
-        else{
-            x += direction * (gameImage.width/2 + DISTANCE_TO_BORDER);
+        else {
+            x += direction * (gameImage.width / 2 + DISTANCE_TO_BORDER);
 
             var y1 = gameObject.y;
             var y2 = gameObject.y + gameImage.height;
@@ -296,19 +411,19 @@ function isInMap(gameObject,gameImage,coordinate,direction) {
 
             if ((top[0] === 51 && top[1] === 0 && top[2] === 0) ||
                 (middle[0] === 51 && middle[1] === 0 && middle[2] === 0) ||
-                (bottom[0] === 51 && bottom[1] === 0 && bottom[2] === 0)){
+                (bottom[0] === 51 && bottom[1] === 0 && bottom[2] === 0)) {
                 return false;
             } else {
                 return true;
             }
         }
     } else {
-        if(direction === 1 && y + gameImage.height/2 + DISTANCE_TO_BORDER > canvas.height)
+        if (direction === 1 && y + gameImage.height / 2 + DISTANCE_TO_BORDER > canvas.height)
             return false;
-        else if(direction === -1 && y - gameImage.height/2 - DISTANCE_TO_BORDER < 0)
+        else if (direction === -1 && y - gameImage.height / 2 - DISTANCE_TO_BORDER < 0)
             return false;
-        else{
-            y += direction * (gameImage.height/2 + DISTANCE_TO_BORDER);
+        else {
+            y += direction * (gameImage.height / 2 + DISTANCE_TO_BORDER);
 
             var x1 = gameObject.x;
             var x2 = gameObject.x + gameImage.width;
@@ -319,7 +434,7 @@ function isInMap(gameObject,gameImage,coordinate,direction) {
 
             if ((left[0] === 51 && left[1] === 0 && left[2] === 0) ||
                 (middle[0] === 51 && middle[1] === 0 && middle[2] === 0) ||
-                (right[0] === 51 && right[1] === 0 && right[2] === 0)){
+                (right[0] === 51 && right[1] === 0 && right[2] === 0)) {
                 return false;
             } else {
                 return true;
@@ -331,7 +446,7 @@ function isInMap(gameObject,gameImage,coordinate,direction) {
 
 
 //Check for guards catching hero because he is too close and there is no wall between
-function checkProximity (guard,hero){
+function checkProximity(guard, hero) {
 
     var attrape = false;
 
@@ -341,46 +456,62 @@ function checkProximity (guard,hero){
     var posymin;
     var posymax;
 
-    if(guard.x-hero.x<80 && guard.x-hero.x>-80 && guard.y-hero.y<80 && guard.y-hero.y>-80){
+    if (guard.x - hero.x < 80 && guard.x - hero.x > -80 && guard.y - hero.y < 80 && guard.y - hero.y > -80) {
 
         attrape = true;
 
-        if(guard.x<hero.x){
+        if (guard.x < hero.x) {
             posxmin = guard.x;
             posxmax = hero.x;
-        }
-        else{
+        } else {
             posxmin = hero.x;
             posxmax = guard.x
         }
 
-        if(guard.y<hero.y){
+        if (guard.y < hero.y) {
             posymin = guard.y;
             posymax = hero.y;
-        }
-        else{
+        } else {
             posymin = hero.y;
             posymax = guard.y;
         }
 
-        while(posxmin < posxmax || posymin < posymax) {
-                var imageData = ctx.getImageData(posxmin, posymin, canvas.width, canvas.height).data;
+        while (posxmin < posxmax || posymin < posymax) {
+            var imageData = ctx.getImageData(posxmin, posymin, canvas.width, canvas.height).data;
 
-                if (imageData[0] === 51 && imageData[1] === 0 && imageData[2] === 0){
-                    attrape=false;
-                }
+            if (imageData[0] === 51 && imageData[1] === 0 && imageData[2] === 0) {
+                attrape = false;
+            }
 
             posxmin += 5;
             posymin += 5;
         }
     }
 
-    if (attrape == true){
-         reset();
-    }
+
+    if (attrape == true)
+        heroCaught(guard);
 }
 
 
+function setPlaying(bool) {
+    playing = bool;
+}
+
+
+function heroCaught(guard) {
+    heroIsCaught = true;
+    heroCaughtX = guard.x;
+    heroCaughtY = guard.y;
+    setPlaying(false);
+    attempts--;
+    if (attempts === 0) {
+        stopGame(false);
+    } else {
+        setTimeout(reset, 3000);
+        setTimeout(setPlaying, 3000, true);
+    }
+}
 
 
 
@@ -390,17 +521,17 @@ DRAW EVERYTHING
 
 // Reset positions
 var reset = function () {
-	hero.x = canvas.width / 2;
-	hero.y = canvas.height / 2;
-    guard1.x=333;
-    guard1.y=500;
-    guard2.x=160;
-    guard2.y=46;
-    guard3.x=914;
-    guard3.y=132;
-	key.x=32+(Math.random()*(canvas.width-64));
-    key.y=32+(Math.random()*(canvas.height-64));
-
+    heroIsCaught = false;
+    hero.x = 75;
+    hero.y = 460;
+    guard1.x = 333;
+    guard1.y = 500;
+    guard2.x = 160;
+    guard2.y = 46;
+    guard3.x = 790;
+    guard3.y = 10;
+    key.x = 32 + (Math.random() * (canvas.width - 64));
+    key.y = 32 + (Math.random() * (canvas.height - 64));
 };
 
 
@@ -422,15 +553,56 @@ var render = function () {
     }
 
     if (keyReady) {
-        ctx.drawImage(keyImage, key.x,key.y);
+        ctx.drawImage(keyImage, key.x, key.y);
     }
 
+    if (introHeroReady) {
+        ctx.drawImage(introHeroImage, introHero.x, introHero.y);
+    }
+
+    if (bulle1Ready) {
+        ctx.drawImage(bulle1Image, bulle1.x, bulle1.y);
+    }
+
+    if (bulle2Ready) {
+        ctx.drawImage(bulle2Image, bulle2.x, bulle2.y);
+    }
+
+    if (heroIsCaught) {
+        ctx.drawImage(guardAngryImage, heroCaughtX, heroCaughtY);
+    }
+
+    drawAttempts();
+
+    drawTimer(timer);
 
 };
 
 
+function drawAttempts() {
+    if (heartReady) {
+        var x = 10;
+        var i;
+        for (i = 0; i < attempts; i++) {
+            ctx.drawImage(heartImage, x, 2);
+            x += 25;
+        }
+    }
+}
 
+function drawTimer(timer) {
 
+    var minutes = timer / 60000;
+    var secondes = (minutes - Math.floor(minutes)) * 60;
+
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+
+    if(Math.floor(secondes) < 10)
+        ctx.fillText(Math.floor(minutes) + ":0" + Math.floor(secondes), 10, 50);
+    else
+        ctx.fillText(Math.floor(minutes) + ":" + Math.floor(secondes), 10, 50);
+}
 
 
 /********************************************************
@@ -442,13 +614,22 @@ var main = function () {
 
     var modifier = delta / 1000;
 
-    if(playing){
+    if (playing) {
         update(modifier);
+
+        //incrémenter le timer
+        timer += delta;
+
+        var minutes = timer / 60000;
 
     }
 
-    render();
+    if (introduction) {
+        startAnimation(delta / 200);
+    }
 
+
+    render();
 
     then = now;
     // Request to do this again ASAP
@@ -456,17 +637,17 @@ var main = function () {
 };
 
 
-var update = function(modifier){
-    moveGuard(guard1,modifier);
-    moveGuard(guard2,modifier);
-    moveGuard(guard3,modifier);
+var update = function (modifier) {
+    moveGuard(guard1, modifier);
+    moveGuard(guard2, modifier);
+    moveGuard(guard3, modifier);
 
     moveHero(modifier);
 
-    checkProximity(guard1,hero);
-    checkProximity(guard2,hero);
-    checkProximity(guard3,hero);
-}
+    checkProximity(guard1, hero);
+    checkProximity(guard2, hero);
+    checkProximity(guard3, hero);
+};
 
 
 
@@ -481,27 +662,43 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 
 
 /********************************************************
-PLAY
+PLAY AND STOP
 ********************************************************/
 
+function startGame(level) {
+    setPlaying(true);
+}
 
+function restartGame() {
+    setPlaying(true);
 
+    document.getElementById("game").style.display = "";
+    document.getElementById("lose").style.display = "none";
+}
 
-function startGame(level){
-    playing = true;
-
-    switch(level){
+function launchGame(level) {
+    console.log("launchgame");
+    switch (level) {
         case "level1":
             level1 = true;
             heroImage.src = "images/hero1.png";
+            introHeroImage.src = "images/selection_hero1.png";
+            bulle1Image.src = "images/hero1_bulle1.png";
+            bulle2Image.src = "images/hero1_bulle2.png";
             break;
         case "level2":
             level2 = true;
             heroImage.src = "images/hero2.png";
+            introHeroImage.src = "images/selection_hero2.png";
+            bulle1Image.src = "images/hero2_bulle1.png";
+            bulle2Image.src = "images/hero2_bulle2.png";
             break;
         case "level3":
             level3 = true;
             heroImage.src = "images/hero3.png";
+            introHeroImage.src = "images/selection_hero3.png";
+            bulle1Image.src = "images/hero3_bulle1.png";
+            bulle2Image.src = "images/hero3_bulle2.png";
             break;
     }
 
@@ -509,6 +706,37 @@ function startGame(level){
     document.getElementById("mainmenu").style.display = "none";
     document.getElementById("levelselection").style.display = "none";
 
+    introduction = true;
+    apparition = true;
+
+}
+
+
+function stopGame(victory) {
+    setPlaying(false);
+
+    if(victory){
+        console.log("you win");
+                //    document.getElementById("lose").value = "nornhgkjnre";
+    }
+    else{
+        document.getElementById("game").style.display = "none";
+        document.getElementById("lose").style.display = "";
+    }
+
+    pause1 = 200;
+    pause2 = 200;
+
+    timer = 0;
+
+    bulle1.x = -450;
+    bulle1.y = 100;
+
+    bulle2.x = -450;
+    bulle2.y = 100;
+
+    attempts = 3;
+    reset();
 }
 
 
