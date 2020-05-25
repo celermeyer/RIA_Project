@@ -16,8 +16,13 @@
 <main>
     <div class="container" id="canvas-game">
 
-        <div id="game">
+        <div id="game" class="background">
             <script src="js/game.js"></script>
+            <div id="buttonSkip" class="buttonSkip">
+                <a onclick="skipAnimation();" target="_blank">
+                    <h2>SKIP THE INTRO</h2>
+                </a>
+            </div>
         </div>
 
         <div id="lose">
@@ -40,15 +45,18 @@
         </div>
 
         <div id="saveScore" style='width: 1000px; height: 600px; border-style: solid;'>
-            <form name="scoreForm" method="get" onSubmit="return saveScoreToFile()">
-                <label for="name">Name:</label><br>
-                <input type="text" id="nname" name="nname"><br>
-                <label for="city">City:</label><br>
-                <input type="text" id="ncity" name="ncity" readonly><br>
-                <label for="noLocation" id="noLocation" style='display: none; color:red;'>Position inaccessible<br></label>
-                <input type="button" value="Get Location" onclick="getLocation()"/><br><br>
-                <input type="submit" value="Submit">
-            </form>
+            <img class="background" src="images/background_win.png"/>
+            <div class="form">
+                <form name="scoreForm" method="get" onSubmit="return saveScoreToFile()">
+                    <label for="name">Name:</label><br>
+                    <input type="text" id="nname" name="nname"><br>
+                    <label for="city">City:</label><br>
+                    <input type="text" id="ncity" name="ncity" readonly><br>
+                    <label for="noLocation" id="noLocation" style='display: none; color:red;'>Position inaccessible<br></label>
+                    <input type="button" value="Get Location" onclick="getLocation()"/><br><br>
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
         </div>
 
         <div id="levelselection">

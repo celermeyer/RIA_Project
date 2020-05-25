@@ -151,6 +151,7 @@ bgImage.onload = function () {
 bgImage.src = "images/background.png";
 
 
+
 //Barreaux (défaite)
 var barreauxReady = false;
 var barreauxImage = new Image();
@@ -217,7 +218,7 @@ var guardImage = new Image();
 guardImage.onload = function () {
     guardReady = true;
 };
-guardImage.src = "images/monster.png";
+guardImage.src = "images/guard_normal.png";
 
 
 //Guard angry
@@ -252,6 +253,12 @@ var guard3 = {
     speed: 64,
     direction: 0
 };
+
+var guard4 = {
+    speed: 64,
+    direction: 0
+};
+
 
 
 //Key
@@ -313,6 +320,13 @@ var startAnimation = function (modifier) {
         }
     }
 
+}
+
+function skipAnimation()
+{
+    introduction = false;
+    document.getElementById("buttonSkip").style.display = "none";
+    playing = true;
 }
 
 
@@ -478,7 +492,6 @@ function checkProximity(guard, hero) {
             posymax = guard.y;
         }
 
-
         var deltax = posxmax - posxmin;
         var deltay = posymax - posymin;
 
@@ -490,28 +503,19 @@ function checkProximity(guard, hero) {
             ratiox = deltax/deltay;
         }
 
-
-
         while (posxmin < posxmax || posymin < posymax) {
             var imageData = ctx.getImageData(posxmin, posymin, canvas.width, canvas.height).data;
 
             if (imageData[0] === 51 && imageData[1] === 0 && imageData[2] === 0) {
-                console.log("il y a un mur");
                 return;
             }
-            else {
-                attrape = true;
-            }
-
             posxmin += 7*ratiox;
             posymin += 7*ratioy;
         }
+
+        heroCaught(guard);
     }
 
-
-    if (attrape == true)
-        heroCaught(guard);
-       // reset();
 }
 
 
@@ -536,6 +540,7 @@ function heroCaught(guard) {
 
 
 
+
 /********************************************************
 DRAW EVERYTHING
 ********************************************************/
@@ -549,8 +554,10 @@ var reset = function () {
     guard1.y = 500;
     guard2.x = 160;
     guard2.y = 46;
-    guard3.x = 790;
-    guard3.y = 10;
+    guard3.x = 720;
+    guard3.y = 220;
+    guard4.x = 680;
+    guard4.y = 20;
     key.x = 32 + (Math.random() * (canvas.width - 64));
     key.y = 32 + (Math.random() * (canvas.height - 64));
 };
@@ -571,23 +578,28 @@ var render = function () {
         ctx.drawImage(guardImage, guard1.x, guard1.y);
         ctx.drawImage(guardImage, guard2.x, guard2.y);
         ctx.drawImage(guardImage, guard3.x, guard3.y);
+        if(level3)
+            ctx.drawImage(guardImage, guard4.x, guard4.y);
     }
 
     if (keyReady) {
         ctx.drawImage(keyImage, key.x, key.y);
     }
 
-    if (introHeroReady) {
-        ctx.drawImage(introHeroImage, introHero.x, introHero.y);
+    if (introduction) {
+        if (introHeroReady) {
+            ctx.drawImage(introHeroImage, introHero.x, introHero.y);
+        }
+
+        if (bulle1Ready) {
+            ctx.drawImage(bulle1Image, bulle1.x, bulle1.y);
+        }
+
+        if (bulle2Ready) {
+            ctx.drawImage(bulle2Image, bulle2.x, bulle2.y);
+        }
     }
 
-    if (bulle1Ready) {
-        ctx.drawImage(bulle1Image, bulle1.x, bulle1.y);
-    }
-
-    if (bulle2Ready) {
-        ctx.drawImage(bulle2Image, bulle2.x, bulle2.y);
-    }
 
     if (heroIsCaught) {
         ctx.drawImage(guardAngryImage, heroCaughtX, heroCaughtY);
@@ -595,7 +607,7 @@ var render = function () {
 
     drawAttempts();
 
-   // drawTimer(timer);
+    drawTimer(timer);
 
 };
 
@@ -659,19 +671,27 @@ var main = function () {
 
 
 var update = function (modifier) {
+
+    console.log("update");
+
     moveGuard(guard1, modifier);
     moveGuard(guard2, modifier);
     moveGuard(guard3, modifier);
 
     moveHero(modifier);
 
-    if(hero.x >= 972 && hero.y <=4){
+    if(hero.x >= 855 && hero.y <= 55){
         stopGame(true);
     }
 
     checkProximity(guard1, hero);
     checkProximity(guard2, hero);
     checkProximity(guard3, hero);
+
+    if(level3){
+        moveGuard(guard4, modifier);
+        checkProximity(guard4, hero);
+    }
 };
 
 
@@ -690,9 +710,6 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 PLAY AND STOP
 ********************************************************/
 
-function startGame(level) {
-    setPlaying(true);
-}
 
 function restartGame() {
     setPlaying(true);
@@ -734,6 +751,8 @@ function launchGame(level) {
 
     introduction = true;
     apparition = true;
+
+    document.getElementById("buttonSkip").style.display = "";
 
 }
 
