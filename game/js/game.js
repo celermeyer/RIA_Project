@@ -644,6 +644,10 @@ var update = function (modifier) {
 
     moveHero(modifier);
 
+    if(hero.x >= 972 && hero.y <=4){
+        stopGame(true);
+    }
+
     checkProximity(guard1, hero);
     checkProximity(guard2, hero);
     checkProximity(guard3, hero);
@@ -674,6 +678,7 @@ function restartGame() {
 
     document.getElementById("game").style.display = "";
     document.getElementById("lose").style.display = "none";
+    document.getElementById("win").style.display = "none";
 }
 
 function launchGame(level) {
@@ -716,11 +721,13 @@ function stopGame(victory) {
     setPlaying(false);
 
     if(victory){
-        console.log("you win");
-                //    document.getElementById("lose").value = "nornhgkjnre";
+        document.getElementById("game").style.display = "none";
+        document.getElementById("lose").style.display = "none";
+        document.getElementById("win").style.display = "";
     }
     else{
         document.getElementById("game").style.display = "none";
+        document.getElementById("win").style.display = "none";
         document.getElementById("lose").style.display = "";
     }
 
