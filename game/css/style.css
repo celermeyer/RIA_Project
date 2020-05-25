@@ -68,3 +68,21 @@ LEVEL SELECTION
 #hero3 {
     left: 690px;
 }
+
+
+/********************************************
+LOSE SCREEN
+********************************************/
+
+.actionbutton {
+      position: absolute;
+      bottom: 100px;
+}
+
+#returnMenuButton {
+    left: 40px;
+}
+
+#restartButton {
+    left: 530px;
+}
