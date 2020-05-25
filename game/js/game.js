@@ -456,9 +456,11 @@ function checkProximity(guard, hero) {
     var posymin;
     var posymax;
 
+    var ratiox;
+    var ratioy;
+
     if (guard.x - hero.x < 80 && guard.x - hero.x > -80 && guard.y - hero.y < 80 && guard.y - hero.y > -80) {
 
-        attrape = true;
 
         if (guard.x < hero.x) {
             posxmin = guard.x;
@@ -476,21 +478,40 @@ function checkProximity(guard, hero) {
             posymax = guard.y;
         }
 
+
+        var deltax = posxmax - posxmin;
+        var deltay = posymax - posymin;
+
+        if (deltax > deltay){
+            ratiox = 1;
+            ratioy = deltay/deltax;
+        } else {
+            ratioy = 1;
+            ratiox = deltax/deltay;
+        }
+
+
+
         while (posxmin < posxmax || posymin < posymax) {
             var imageData = ctx.getImageData(posxmin, posymin, canvas.width, canvas.height).data;
 
             if (imageData[0] === 51 && imageData[1] === 0 && imageData[2] === 0) {
-                attrape = false;
+                console.log("il y a un mur");
+                return;
+            }
+            else {
+                attrape = true;
             }
 
-            posxmin += 5;
-            posymin += 5;
+            posxmin += 7*ratiox;
+            posymin += 7*ratioy;
         }
     }
 
 
     if (attrape == true)
         heroCaught(guard);
+       // reset();
 }
 
 
@@ -574,7 +595,7 @@ var render = function () {
 
     drawAttempts();
 
-    drawTimer(timer);
+   // drawTimer(timer);
 
 };
 
