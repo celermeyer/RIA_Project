@@ -71,7 +71,7 @@ LEVEL SELECTION
 
 
 /********************************************
-LOSE SCREEN
+LOSE AND WIN SCREENS
 ********************************************/
 
 .actionbutton {
@@ -86,6 +86,11 @@ LOSE SCREEN
 #restartButton {
     left: 530px;
 }
+
+#saveScoreButton {
+    left: 530px;
+}
+
 
 
 /********************************************
