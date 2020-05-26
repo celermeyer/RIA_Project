@@ -109,10 +109,16 @@ function myUp(e) {
     key1.isDragging = false;
     key2.isDragging = false;
 
-    if (key1.x + keyImage.width / 2 > hero.x && key1.x + keyImage.width / 2 < hero.x + heroImage.width && key1.y + keyImage.height / 2 > hero.y && key1.y + keyImage.height / 2 < hero.y + heroImage.height) {
+    var key1x = key1.x+keyImage.width/2;
+    var key1y = key1.y+keyImage.height/2;
+
+    var key2x = key2.x+keyImage.width/2;
+    var key2y = key2.y+keyImage.height/2;
+
+    if (key1x > hero.x && key1x<hero.x+heroImage.width && key1y>hero.y && key1y<hero.y+heroImage.height) {
         hero.key1=true;
     }
-    else if (key2.x + keyImage.width / 2 > hero.x && key2.x + keyImage.width / 2 < hero.x + heroImage.width && key2.y + keyImage.height / 2 > hero.y && key2.y + keyImage.height / 2 < hero.y + heroImage.height) {
+    else if (key2x > hero.x && key2x<hero.x+heroImage.width && key2y>hero.y && key2y<hero.y+heroImage.height) {
         hero.key2=true;
     }
 }
