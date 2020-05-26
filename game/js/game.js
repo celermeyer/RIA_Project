@@ -85,9 +85,14 @@ function myDown(e) {
     var my = parseInt(e.clientY - offsetY);
 
     dragok = false;
-    if (mx > key.x && mx < key.x + keyImage.width && my > key.y && my < key.y + keyImage.height) {
+
+    if (key1.x-hero.x<50 && key1.x-hero.x>-50 && key1.y-hero.y<50 && key1.y-hero.y>-50) {
         dragok = true;
-        key.isDragging = true;
+        key1.isDragging = true;
+    }
+    else if (key2.x-hero.x<50 && key2.x-hero.x>-50 && key2.y-hero.y<50 && key2.y-hero.y>-50) {
+        dragok = true;
+        key2.isDragging = true;
     }
 
     startX = mx;
@@ -101,10 +106,14 @@ function myUp(e) {
     e.stopPropagation();
 
     dragok = false;
-    key.isDragging = false;
+    key1.isDragging = false;
+    key2.isDragging = false;
 
-    if (key.x + keyImage.width / 2 > hero.x && key.x + keyImage.width / 2 < hero.x + heroImage.width && key.y + keyImage.height / 2 > hero.y && key.y + keyImage.height / 2 < hero.y + heroImage.height) {
-        console.log('key dropped on hero !');
+    if (key1.x + keyImage.width / 2 > hero.x && key1.x + keyImage.width / 2 < hero.x + heroImage.width && key1.y + keyImage.height / 2 > hero.y && key1.y + keyImage.height / 2 < hero.y + heroImage.height) {
+        hero.key1=true;
+    }
+    else if (key2.x + keyImage.width / 2 > hero.x && key2.x + keyImage.width / 2 < hero.x + heroImage.width && key2.y + keyImage.height / 2 > hero.y && key2.y + keyImage.height / 2 < hero.y + heroImage.height) {
+        hero.key2=true;
     }
 }
 
@@ -121,9 +130,13 @@ function myMove(e) {
         var dx = mx - startX;
         var dy = my - startY;
 
-        if (key.isDragging) {
-            key.x += dx;
-            key.y += dy;
+        if (key1.isDragging && key1.x-hero.x<50 && key1.x-hero.x>-50 && key1.y-hero.y<50 && key1.y-hero.y>-50) {
+            key1.x += dx;
+            key1.y += dy;
+        }
+        else if (key2.isDragging && key2.x-hero.x<50 && key2.x-hero.x>-50 && key2.y-hero.y<50 && key2.y-hero.y>-50) {
+            key2.x += dx;
+            key2.y += dy;
         }
 
         render();
@@ -171,6 +184,8 @@ heroImage.onload = function () {
 
 var hero = {
     speed: 125, // movement in pixels per second
+    key1:false,
+    key2:false,
 };
 
 
@@ -269,8 +284,17 @@ keyImage.onload = function () {
 }
 keyImage.src = "images/key.png";
 
-var key = {};
-key.isDragging = false;
+var key1 = {
+
+};
+
+key1.isDragging = false;
+
+var key2 ={
+
+};
+
+key2.isDragging=false;
 
 
 
@@ -311,8 +335,7 @@ var startAnimation = function (modifier) {
                         if (introHero.x > -200) {
                             introHero.x -= 100 * modifier;
                         } else if (bulle2.y <= -330) {
-                            introduction = false;
-                            playing = true;
+                            skipAnimation();
                         }
                     }
                 }
@@ -509,8 +532,8 @@ function checkProximity(guard, hero) {
             if (imageData[0] === 51 && imageData[1] === 0 && imageData[2] === 0) {
                 return;
             }
-            posxmin += 7*ratiox;
-            posymin += 7*ratioy;
+            posxmin += 5*ratiox;
+            posymin += 5*ratioy;
         }
 
         heroCaught(guard);
@@ -558,8 +581,10 @@ var reset = function () {
     guard3.y = 220;
     guard4.x = 680;
     guard4.y = 20;
-    key.x = 32 + (Math.random() * (canvas.width - 64));
-    key.y = 32 + (Math.random() * (canvas.height - 64));
+    key1.x = 15;
+    key1.y = 180;
+    key2.x = 740;
+    key2.y = 10;
 };
 
 
@@ -583,7 +608,12 @@ var render = function () {
     }
 
     if (keyReady) {
-        ctx.drawImage(keyImage, key.x, key.y);
+        if(level2 || level3)
+            if(!hero.key1)
+            ctx.drawImage(keyImage, key1.x, key1.y);
+        if(level3)
+            if(!hero.key2)
+            ctx.drawImage(keyImage, key2.x, key2.y);
     }
 
     if (introduction) {
@@ -681,7 +711,18 @@ var update = function (modifier) {
     moveHero(modifier);
 
     if(hero.x >= 855 && hero.y <= 55){
-        stopGame(true);
+
+        if(level1)
+            stopGame(true);
+        if(level2){
+            if(hero.key1)
+                stopGame(true);
+        }
+        if(level3){
+            if(hero.key1)
+                if(hero.key2)
+                    stopGame(true);
+        }
     }
 
     checkProximity(guard1, hero);
@@ -783,6 +824,10 @@ function stopGame(victory) {
     bulle2.y = 100;
 
     attempts = 3;
+
+    hero.key1=false;
+    hero.key2=false;
+
     reset();
 }
 
