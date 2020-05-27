@@ -574,7 +574,7 @@ function heroCaught(guard) {
     setPlaying(false);
     attempts--;
     if (attempts === 0) {
-        stopGame(false);
+        stopGame("lose");
     } else {
         sound_caught.play();
         setTimeout(reset, 3000);
@@ -737,15 +737,15 @@ var update = function (modifier) {
     if(hero.x >= 855 && hero.y <= 55){
 
         if(level1)
-            stopGame(true);
+            stopGame("victory");
         if(level2){
             if(hero.key1)
-                stopGame(true);
+                stopGame("victory");
         }
         if(level3){
             if(hero.key1)
                 if(hero.key2)
-                    stopGame(true);
+                    stopGame("victory");
         }
     }
 
@@ -822,22 +822,30 @@ function launchGame(level) {
 }
 
 
-function stopGame(victory) {
+function stopGame(statut) {
     setPlaying(false);
 
     sound_game.pause();
 
-    if(victory){
+    if(statut == "victory"){
         sound_win.play();
         document.getElementById("game").style.display = "none";
         document.getElementById("lose").style.display = "none";
         document.getElementById("win").style.display = "";
     }
-    else{
+    else if (statut == "lose") {
         sound_lost.play();
         document.getElementById("game").style.display = "none";
         document.getElementById("win").style.display = "none";
         document.getElementById("lose").style.display = "";
+    }
+    else if (statut == "abort") {
+        sound_intro.pause();
+        sound_intro.currentTime=0;
+        document.getElementById("mainmenu").style.display = "";
+        document.getElementById("game").style.display = "none";
+        introduction=false;
+        //displayMenu();
     }
 
     pause1 = 200;
