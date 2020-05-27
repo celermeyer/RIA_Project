@@ -116,9 +116,11 @@ function myUp(e) {
     var key2y = key2.y+keyImage.height/2;
 
     if (key1x > hero.x && key1x<hero.x+heroImage.width && key1y>hero.y && key1y<hero.y+heroImage.height) {
+        sound_key.play();
         hero.key1=true;
     }
     else if (key2x > hero.x && key2x<hero.x+heroImage.width && key2y>hero.y && key2y<hero.y+heroImage.height) {
+        sound.key.play();
         hero.key2=true;
     }
 }
@@ -158,8 +160,17 @@ function myMove(e) {
 
 
 /********************************************************
-GAME OBJECTS
+GAME OBJECTS AND SOUNDS
 ********************************************************/
+
+//SOUNDS
+var sound_game = new Audio("sounds/game_fond.wav");
+sound_game.volume=0.05;
+var sound_caught = new Audio("sounds/caughtbyguard.wav");
+var sound_win = new Audio("sounds/applaudissements.wav");
+var sound_lost = new Audio("sounds/lost.wav");
+var sound_key = new Audio("sounds/whoosh.wav");
+var sound_intro = new Audio("sounds/voixintro.ogg")
 
 //BG
 var bgReady = false;
@@ -322,6 +333,7 @@ var startAnimation = function (modifier) {
     if (!apparition) {
         if (bulle1.x < 200) {
             bulle1.x += 100 * modifier;
+            sound_intro.play();
         } else {
             if (pause1 > 0) {
                 pause1 -= 1;
@@ -354,6 +366,8 @@ var startAnimation = function (modifier) {
 function skipAnimation()
 {
     introduction = false;
+    sound_intro.pause();
+    sound_intro.currentTime=0;
     document.getElementById("buttonSkip").style.display = "none";
     playing = true;
 }
@@ -562,6 +576,7 @@ function heroCaught(guard) {
     if (attempts === 0) {
         stopGame(false);
     } else {
+        sound_caught.play();
         setTimeout(reset, 3000);
         setTimeout(setPlaying, 3000, true);
     }
@@ -577,6 +592,8 @@ DRAW EVERYTHING
 // Reset positions
 var reset = function () {
     heroIsCaught = false;
+    hero.key1=false;
+    hero.key2=false;
     hero.x = 75;
     hero.y = 460;
     guard1.x = 333;
@@ -684,6 +701,7 @@ var main = function () {
     var modifier = delta / 1000;
 
     if (playing) {
+        sound_game.play();
         update(modifier);
 
         //incrémenter le timer
@@ -807,12 +825,16 @@ function launchGame(level) {
 function stopGame(victory) {
     setPlaying(false);
 
+    sound_game.pause();
+
     if(victory){
+        sound_win.play();
         document.getElementById("game").style.display = "none";
         document.getElementById("lose").style.display = "none";
         document.getElementById("win").style.display = "";
     }
     else{
+        sound_lost.play();
         document.getElementById("game").style.display = "none";
         document.getElementById("win").style.display = "none";
         document.getElementById("lose").style.display = "";
