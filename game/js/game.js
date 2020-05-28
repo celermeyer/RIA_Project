@@ -259,6 +259,26 @@ guardAngryImage.onload = function () {
 guardAngryImage.src = "images/guard_angry.png";
 
 
+//Guard
+function Guard() {
+    this.x;
+    this.y;
+    this.speed = 64;
+    this.direction = false;
+
+    this.setPosition = function (x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+var guard1 = new Guard();
+var guard2 = new Guard();
+var guard3 = new Guard();
+var guard4 = new Guard();
+
+
+
 //Heart
 var heartReady = false;
 var heartImage = new Image();
@@ -266,28 +286,6 @@ heartImage.onload = function () {
     heartReady = true;
 };
 heartImage.src = "images/heart.png";
-
-
-var guard1 = {
-    speed: 64,
-    direction: 0
-};
-
-var guard2 = {
-    speed: 64,
-    direction: 0
-};
-
-var guard3 = {
-    speed: 64,
-    direction: 0
-};
-
-var guard4 = {
-    speed: 64,
-    direction: 0
-};
-
 
 
 //Key
@@ -404,7 +402,7 @@ var moveHero = function (modifier) {
 // Move Guards
 var moveGuard = function (guard, modifier) {
 
-    if (guard.direction == 0) {
+    if (!guard.direction) {
         guard.direction = Math.floor(Math.random() * 4) + 1;
     }
 
@@ -413,28 +411,28 @@ var moveGuard = function (guard, modifier) {
             if (isInMap(guard, guardImage, 'y', 1)) {
                 guard.y += guard.speed * modifier;
             } else {
-                guard.direction = 0;
+                guard.direction = false;
             }
             break;
         case 2:
             if (isInMap(guard, guardImage, 'x', 1)) {
                 guard.x += guard.speed * modifier;
             } else {
-                guard.direction = 0;
+                guard.direction = false;
             }
             break;
         case 3:
             if (isInMap(guard, guardImage, 'y', -1)) {
                 guard.y -= guard.speed * modifier;
             } else {
-                guard.direction = 0;
+                guard.direction = false;
             }
             break;
         case 4:
             if (isInMap(guard, guardImage, 'x', -1)) {
                 guard.x -= guard.speed * modifier;
             } else {
-                guard.direction = 0;
+                guard.direction = false;
             }
     }
 };
@@ -595,14 +593,12 @@ var reset = function () {
     hero.key2 = false;
     hero.x = 75;
     hero.y = 460;
-    guard1.x = 333;
-    guard1.y = 500;
-    guard2.x = 160;
-    guard2.y = 46;
-    guard3.x = 720;
-    guard3.y = 220;
-    guard4.x = 680;
-    guard4.y = 20;
+
+    guard1.setPosition(333,500);
+    guard2.setPosition(160,46);
+    guard3.setPosition(720,220);
+    guard4.setPosition(680,20);
+
     key1.x = 15;
     key1.y = 180;
     key2.x = 740;
@@ -787,7 +783,10 @@ function restartGame() {
 }
 
 function launchGame(level) {
-    console.log("launchgame");
+    level1 = false;
+    level2 = false;
+    level3 = false;
+
     switch (level) {
         case "level1":
             level1 = true;
@@ -826,9 +825,6 @@ function launchGame(level) {
 
 function stopGame(statut) {
     setPlaying(false);
-    level1 = false;
-    level2 = false;
-    level3 = false;
 
     sound_game.pause();
 
