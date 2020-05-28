@@ -259,15 +259,6 @@ guardAngryImage.onload = function () {
 guardAngryImage.src = "images/guard_angry.png";
 
 
-//Heart
-var heartReady = false;
-var heartImage = new Image();
-heartImage.onload = function () {
-    heartReady = true;
-};
-heartImage.src = "images/heart.png";
-
-
 //Guard
 function Guard() {
     this.x;
@@ -285,6 +276,16 @@ var guard1 = new Guard();
 var guard2 = new Guard();
 var guard3 = new Guard();
 var guard4 = new Guard();
+
+
+
+//Heart
+var heartReady = false;
+var heartImage = new Image();
+heartImage.onload = function () {
+    heartReady = true;
+};
+heartImage.src = "images/heart.png";
 
 
 //Key
