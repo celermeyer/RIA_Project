@@ -71,7 +71,38 @@ LEVEL SELECTION
 
 
 /********************************************
-LOSE SCREEN
+GAME / SKIP INTRODUCTION
+********************************************/
+
+.buttonSkip {
+    position: absolute;
+    top: 520px;
+    left: 750px;
+    border-color: white;
+    border-style: solid;
+    color: white;
+    background-color: black;
+}
+
+
+.buttonSkip a h2 {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+
+.buttonSkip a h2:hover{
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.buttonSkip a h2:active{
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+
+
+/********************************************
+LOSE AND WIN SCREENS
 ********************************************/
 
 .actionbutton {
@@ -85,4 +116,19 @@ LOSE SCREEN
 
 #restartButton {
     left: 530px;
+}
+
+#saveScoreButton {
+    left: 530px;
+}
+
+
+
+/********************************************
+SAVE SCORE
+********************************************/
+
+.form {
+    position: absolute;
+    bottom: 100px;
 }

@@ -2,7 +2,7 @@
 VARIABLES
 **********************************************************/
 
-const DISTANCE_TO_BORDER = 4;
+const DISTANCE_TO_BORDER = 5;
 var introduction = false;
 var apparition = false;
 var playing = false;
@@ -85,9 +85,13 @@ function myDown(e) {
     var my = parseInt(e.clientY - offsetY);
 
     dragok = false;
-    if (mx > key.x && mx < key.x + keyImage.width && my > key.y && my < key.y + keyImage.height) {
+
+    if (key1.x - hero.x < 50 && key1.x - hero.x > -50 && key1.y - hero.y < 50 && key1.y - hero.y > -50) {
         dragok = true;
-        key.isDragging = true;
+        key1.isDragging = true;
+    } else if (key2.x - hero.x < 50 && key2.x - hero.x > -50 && key2.y - hero.y < 50 && key2.y - hero.y > -50) {
+        dragok = true;
+        key2.isDragging = true;
     }
 
     startX = mx;
@@ -101,10 +105,21 @@ function myUp(e) {
     e.stopPropagation();
 
     dragok = false;
-    key.isDragging = false;
+    key1.isDragging = false;
+    key2.isDragging = false;
 
-    if (key.x + keyImage.width / 2 > hero.x && key.x + keyImage.width / 2 < hero.x + heroImage.width && key.y + keyImage.height / 2 > hero.y && key.y + keyImage.height / 2 < hero.y + heroImage.height) {
-        console.log('key dropped on hero !');
+    var key1x = key1.x + keyImage.width / 2;
+    var key1y = key1.y + keyImage.height / 2;
+
+    var key2x = key2.x + keyImage.width / 2;
+    var key2y = key2.y + keyImage.height / 2;
+
+    if (key1x > hero.x && key1x < hero.x + heroImage.width && key1y > hero.y && key1y < hero.y + heroImage.height) {
+        sound_key.play();
+        hero.key1 = true;
+    } else if (key2x > hero.x && key2x < hero.x + heroImage.width && key2y > hero.y && key2y < hero.y + heroImage.height) {
+        sound.key.play();
+        hero.key2 = true;
     }
 }
 
@@ -121,9 +136,12 @@ function myMove(e) {
         var dx = mx - startX;
         var dy = my - startY;
 
-        if (key.isDragging) {
-            key.x += dx;
-            key.y += dy;
+        if (key1.isDragging && key1.x - hero.x < 50 && key1.x - hero.x > -50 && key1.y - hero.y < 50 && key1.y - hero.y > -50) {
+            key1.x += dx;
+            key1.y += dy;
+        } else if (key2.isDragging && key2.x - hero.x < 50 && key2.x - hero.x > -50 && key2.y - hero.y < 50 && key2.y - hero.y > -50) {
+            key2.x += dx;
+            key2.y += dy;
         }
 
         render();
@@ -139,8 +157,17 @@ function myMove(e) {
 
 
 /********************************************************
-GAME OBJECTS
+GAME OBJECTS AND SOUNDS
 ********************************************************/
+
+//SOUNDS
+var sound_game = new Audio("sounds/game_fond.wav");
+sound_game.volume = 0.05;
+var sound_caught = new Audio("sounds/caughtbyguard.wav");
+var sound_win = new Audio("sounds/applaudissements.wav");
+var sound_lost = new Audio("sounds/lost.wav");
+var sound_key = new Audio("sounds/whoosh.wav");
+var sound_intro = new Audio("sounds/voixintro.ogg")
 
 //BG
 var bgReady = false;
@@ -149,6 +176,7 @@ bgImage.onload = function () {
     bgReady = true;
 };
 bgImage.src = "images/background.png";
+
 
 
 //Barreaux (défaite)
@@ -170,6 +198,8 @@ heroImage.onload = function () {
 
 var hero = {
     speed: 125, // movement in pixels per second
+    key1: false,
+    key2: false,
 };
 
 
@@ -217,7 +247,7 @@ var guardImage = new Image();
 guardImage.onload = function () {
     guardReady = true;
 };
-guardImage.src = "images/monster.png";
+guardImage.src = "images/guard_normal.png";
 
 
 //Guard angry
@@ -253,6 +283,12 @@ var guard3 = {
     direction: 0
 };
 
+var guard4 = {
+    speed: 64,
+    direction: 0
+};
+
+
 
 //Key
 var keyReady = false;
@@ -262,9 +298,17 @@ keyImage.onload = function () {
 }
 keyImage.src = "images/key.png";
 
-var key = {};
-key.isDragging = false;
+var key1 = {
 
+};
+
+key1.isDragging = false;
+
+var key2 = {
+
+};
+
+key2.isDragging = false;
 
 
 
@@ -285,6 +329,7 @@ var startAnimation = function (modifier) {
     if (!apparition) {
         if (bulle1.x < 200) {
             bulle1.x += 100 * modifier;
+            sound_intro.play();
         } else {
             if (pause1 > 0) {
                 pause1 -= 1;
@@ -304,8 +349,7 @@ var startAnimation = function (modifier) {
                         if (introHero.x > -200) {
                             introHero.x -= 100 * modifier;
                         } else if (bulle2.y <= -330) {
-                            introduction = false;
-                            playing = true;
+                            skipAnimation();
                         }
                     }
                 }
@@ -313,6 +357,14 @@ var startAnimation = function (modifier) {
         }
     }
 
+}
+
+function skipAnimation() {
+    introduction = false;
+    sound_intro.pause();
+    sound_intro.currentTime = 0;
+    document.getElementById("buttonSkip").style.display = "none";
+    playing = true;
 }
 
 
@@ -450,47 +502,62 @@ function checkProximity(guard, hero) {
 
     var attrape = false;
 
-    var posxmin;
-    var posxmax;
-
-    var posymin;
-    var posymax;
-
     if (guard.x - hero.x < 80 && guard.x - hero.x > -80 && guard.y - hero.y < 80 && guard.y - hero.y > -80) {
 
-        attrape = true;
+        var startX = guard.x + guardImage.width / 2;
+        var startY = guard.y + guardImage.height / 2;
 
-        if (guard.x < hero.x) {
-            posxmin = guard.x;
-            posxmax = hero.x;
+        var endX = hero.x + heroImage.width / 2;
+        var endY = hero.y + heroImage.height / 2;
+
+        var directionX;
+        var directionY;
+
+        if (startX < endX)
+            directionX = 1;
+        else
+            directionX = -1;
+
+        if (startY < endY)
+            directionY = 1;
+        else
+            directionY = -1;
+
+        var deltax = Math.abs(endX - startX);
+        var deltay = Math.abs(endY - startY);
+
+        var ratiox;
+        var ratioy;
+
+        var nbEtapes;
+
+        if (deltax > deltay) {
+            nbEtapes = deltax / 5;
+            ratiox = 1;
+            ratioy = deltay / deltax;
         } else {
-            posxmin = hero.x;
-            posxmax = guard.x
+            nbEtapes = deltay / 5;
+            ratioy = 1;
+            ratiox = deltax / deltay;
         }
 
-        if (guard.y < hero.y) {
-            posymin = guard.y;
-            posymax = hero.y;
-        } else {
-            posymin = hero.y;
-            posymax = guard.y;
-        }
 
-        while (posxmin < posxmax || posymin < posymax) {
-            var imageData = ctx.getImageData(posxmin, posymin, canvas.width, canvas.height).data;
+        while (nbEtapes > 0) {
+            var imageData = ctx.getImageData(startX, startY, canvas.width, canvas.height).data;
 
             if (imageData[0] === 51 && imageData[1] === 0 && imageData[2] === 0) {
-                attrape = false;
+                return;
             }
 
-            posxmin += 5;
-            posymin += 5;
+            startX += directionX * 5 * ratiox;
+            startY += directionY * 5 * ratioy;
+
+            nbEtapes--;
         }
+
+        heroCaught(guard);
     }
 
-
-    if (attrape == true)
-        heroCaught(guard);
 }
 
 
@@ -506,12 +573,14 @@ function heroCaught(guard) {
     setPlaying(false);
     attempts--;
     if (attempts === 0) {
-        stopGame(false);
+        stopGame("lose");
     } else {
+        sound_caught.play();
         setTimeout(reset, 3000);
         setTimeout(setPlaying, 3000, true);
     }
 }
+
 
 
 
@@ -522,16 +591,22 @@ DRAW EVERYTHING
 // Reset positions
 var reset = function () {
     heroIsCaught = false;
+    hero.key1 = false;
+    hero.key2 = false;
     hero.x = 75;
     hero.y = 460;
     guard1.x = 333;
     guard1.y = 500;
     guard2.x = 160;
     guard2.y = 46;
-    guard3.x = 790;
-    guard3.y = 10;
-    key.x = 32 + (Math.random() * (canvas.width - 64));
-    key.y = 32 + (Math.random() * (canvas.height - 64));
+    guard3.x = 720;
+    guard3.y = 220;
+    guard4.x = 680;
+    guard4.y = 20;
+    key1.x = 15;
+    key1.y = 180;
+    key2.x = 740;
+    key2.y = 10;
 };
 
 
@@ -550,23 +625,37 @@ var render = function () {
         ctx.drawImage(guardImage, guard1.x, guard1.y);
         ctx.drawImage(guardImage, guard2.x, guard2.y);
         ctx.drawImage(guardImage, guard3.x, guard3.y);
+        if (level3)
+            ctx.drawImage(guardImage, guard4.x, guard4.y);
     }
 
     if (keyReady) {
-        ctx.drawImage(keyImage, key.x, key.y);
+        if (level2 || level3) {
+            if (!hero.key1) {
+                ctx.drawImage(keyImage, key1.x, key1.y);
+            }
+        }
+        if (level3) {
+            if (!hero.key2) {
+                ctx.drawImage(keyImage, key2.x, key2.y);
+            }
+        }
     }
 
-    if (introHeroReady) {
-        ctx.drawImage(introHeroImage, introHero.x, introHero.y);
+    if (introduction) {
+        if (introHeroReady) {
+            ctx.drawImage(introHeroImage, introHero.x, introHero.y);
+        }
+
+        if (bulle1Ready) {
+            ctx.drawImage(bulle1Image, bulle1.x, bulle1.y);
+        }
+
+        if (bulle2Ready) {
+            ctx.drawImage(bulle2Image, bulle2.x, bulle2.y);
+        }
     }
 
-    if (bulle1Ready) {
-        ctx.drawImage(bulle1Image, bulle1.x, bulle1.y);
-    }
-
-    if (bulle2Ready) {
-        ctx.drawImage(bulle2Image, bulle2.x, bulle2.y);
-    }
 
     if (heroIsCaught) {
         ctx.drawImage(guardAngryImage, heroCaughtX, heroCaughtY);
@@ -598,7 +687,7 @@ function drawTimer(timer) {
     ctx.font = "30px Arial";
     ctx.fillStyle = "white";
 
-    if(Math.floor(secondes) < 10)
+    if (Math.floor(secondes) < 10)
         ctx.fillText(Math.floor(minutes) + ":0" + Math.floor(secondes), 10, 50);
     else
         ctx.fillText(Math.floor(minutes) + ":" + Math.floor(secondes), 10, 50);
@@ -615,6 +704,7 @@ var main = function () {
     var modifier = delta / 1000;
 
     if (playing) {
+        sound_game.play();
         update(modifier);
 
         //incrémenter le timer
@@ -638,15 +728,37 @@ var main = function () {
 
 
 var update = function (modifier) {
+
     moveGuard(guard1, modifier);
     moveGuard(guard2, modifier);
     moveGuard(guard3, modifier);
 
     moveHero(modifier);
 
+    if (hero.x >= 855 && hero.y <= 55) {
+
+        if (level1)
+            stopGame("victory");
+        if (level2) {
+            if (hero.key1) {
+                stopGame("victory");
+            }
+        }
+        if (level3) {
+            if (hero.key1 && hero.key2) {
+                stopGame("victory");
+            }
+        }
+    }
+
     checkProximity(guard1, hero);
     checkProximity(guard2, hero);
     checkProximity(guard3, hero);
+
+    if (level3) {
+        moveGuard(guard4, modifier);
+        checkProximity(guard4, hero);
+    }
 };
 
 
@@ -665,15 +777,13 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 PLAY AND STOP
 ********************************************************/
 
-function startGame(level) {
-    setPlaying(true);
-}
 
 function restartGame() {
     setPlaying(true);
 
     document.getElementById("game").style.display = "";
     document.getElementById("lose").style.display = "none";
+    document.getElementById("win").style.display = "none";
 }
 
 function launchGame(level) {
@@ -709,19 +819,36 @@ function launchGame(level) {
     introduction = true;
     apparition = true;
 
+    document.getElementById("buttonSkip").style.display = "";
+
 }
 
 
-function stopGame(victory) {
+function stopGame(statut) {
     setPlaying(false);
+    level1 = false;
+    level2 = false;
+    level3 = false;
 
-    if(victory){
-        console.log("you win");
-                //    document.getElementById("lose").value = "nornhgkjnre";
-    }
-    else{
+    sound_game.pause();
+
+    if (statut == "victory") {
+        sound_win.play();
         document.getElementById("game").style.display = "none";
+        document.getElementById("lose").style.display = "none";
+        document.getElementById("win").style.display = "";
+    } else if (statut == "lose") {
+        sound_lost.play();
+        document.getElementById("game").style.display = "none";
+        document.getElementById("win").style.display = "none";
         document.getElementById("lose").style.display = "";
+    } else if (statut == "abort") {
+        sound_intro.pause();
+        sound_intro.currentTime = 0;
+        document.getElementById("mainmenu").style.display = "";
+        document.getElementById("game").style.display = "none";
+        introduction = false;
+        //displayMenu();
     }
 
     pause1 = 200;
@@ -736,6 +863,10 @@ function stopGame(victory) {
     bulle2.y = 100;
 
     attempts = 3;
+
+    hero.key1 = false;
+    hero.key2 = false;
+
     reset();
 }
 
