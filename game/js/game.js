@@ -118,7 +118,7 @@ function myUp(e) {
         sound_key.play();
         hero.key1 = true;
     } else if (key2x > hero.x && key2x < hero.x + heroImage.width && key2y > hero.y && key2y < hero.y + heroImage.height) {
-        sound.key.play();
+        sound_key.play();
         hero.key2 = true;
     }
 }
