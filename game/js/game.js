@@ -70,13 +70,12 @@ var offsetX = BB.left;
 var offsetY = BB.top;
 
 //Listen for mouse events
-
 canvas.onmousedown = myDown;
 canvas.onmouseup = myUp;
 canvas.onmousemove = myMove;
 
 
-// handle mousedown events
+//Handle mousedown events
 function myDown(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -99,7 +98,7 @@ function myDown(e) {
 }
 
 
-// handle mouseup events
+//Handle mouseup events
 function myUp(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -115,15 +114,17 @@ function myUp(e) {
     var key2y = key2.y + keyImage.height / 2;
 
     if (key1x > hero.x && key1x < hero.x + heroImage.width && key1y > hero.y && key1y < hero.y + heroImage.height) {
+        // key1 dragged on hero
         sound_key.play();
         hero.key1 = true;
     } else if (key2x > hero.x && key2x < hero.x + heroImage.width && key2y > hero.y && key2y < hero.y + heroImage.height) {
+        // key2 dragged on hero
         sound_key.play();
         hero.key2 = true;
     }
 }
 
-// handle mouse moves
+//Handle mouse moves
 function myMove(e) {
     if (dragok) {
 
@@ -136,6 +137,7 @@ function myMove(e) {
         var dx = mx - startX;
         var dy = my - startY;
 
+        // Déplacement de la clé
         if (key1.isDragging && key1.x - hero.x < 50 && key1.x - hero.x > -50 && key1.y - hero.y < 50 && key1.y - hero.y > -50) {
             key1.x += dx;
             key1.y += dy;
@@ -169,6 +171,8 @@ var sound_lost = new Audio("sounds/lost.wav");
 var sound_key = new Audio("sounds/whoosh.wav");
 var sound_intro = new Audio("sounds/voixintro.ogg")
 
+
+
 //BG
 var bgReady = false;
 var bgImage = new Image();
@@ -177,15 +181,6 @@ bgImage.onload = function () {
 };
 bgImage.src = "images/background.png";
 
-
-
-//Barreaux (défaite)
-var barreauxReady = false;
-var barreauxImage = new Image();
-barreauxImage.onload = function () {
-    barreauxReady = true;
-};
-barreauxImage.src = "images/barreaux.png"
 
 
 
@@ -204,44 +199,9 @@ var hero = {
 
 
 
-//Introduction
-
-var introHeroReady = false;
-var introHeroImage = new Image();
-introHeroImage.onload = function () {
-    introHeroReady = true;
-}
-
-var introHero = {
-    y: 350,
-    x: -200,
-};
-
-var bulle1Ready = false;
-var bulle1Image = new Image();
-bulle1Image.onload = function () {
-    bulle1Ready = true;
-}
-
-var bulle1 = {
-    y: 100,
-    x: -450,
-};
-
-var bulle2Ready = false;
-var bulle2Image = new Image();
-bulle2Image.onload = function () {
-    bulle2Ready = true;
-}
-
-var bulle2 = {
-    y: 100,
-    x: -450,
-};
-
-
 
 //Guards
+//Guard normal
 var guardReady = false;
 var guardImage = new Image();
 guardImage.onload = function () {
@@ -259,7 +219,6 @@ guardAngryImage.onload = function () {
 guardAngryImage.src = "images/guard_angry.png";
 
 
-//Guard
 function Guard() {
     this.x;
     this.y;
@@ -279,6 +238,8 @@ var guard4 = new Guard();
 
 
 
+
+
 //Heart
 var heartReady = false;
 var heartImage = new Image();
@@ -286,6 +247,9 @@ heartImage.onload = function () {
     heartReady = true;
 };
 heartImage.src = "images/heart.png";
+
+
+
 
 
 //Key
@@ -296,17 +260,53 @@ keyImage.onload = function () {
 }
 keyImage.src = "images/key.png";
 
-var key1 = {
-
-};
-
+var key1 = {};
 key1.isDragging = false;
 
-var key2 = {
+var key2 = {};
+key2.isDragging = false;
 
+
+
+
+
+//Introduction
+//hero
+var introHeroReady = false;
+var introHeroImage = new Image();
+introHeroImage.onload = function () {
+    introHeroReady = true;
+}
+
+var introHero = {
+    y: 350,
+    x: -200,
 };
 
-key2.isDragging = false;
+//bulle1
+var bulle1Ready = false;
+var bulle1Image = new Image();
+bulle1Image.onload = function () {
+    bulle1Ready = true;
+}
+
+var bulle1 = {
+    y: 100,
+    x: -450,
+};
+
+//bulle2
+var bulle2Ready = false;
+var bulle2Image = new Image();
+bulle2Image.onload = function () {
+    bulle2Ready = true;
+}
+
+var bulle2 = {
+    y: 100,
+    x: -450,
+};
+
 
 
 
@@ -315,7 +315,6 @@ BEFORE THE GAME
 ********************************************************/
 
 //Start introduction animation
-
 var startAnimation = function (modifier) {
     if (apparition) {
         if (introHero.x < 0)
@@ -354,9 +353,10 @@ var startAnimation = function (modifier) {
             }
         }
     }
-
 }
 
+
+//Skip the introduction animation when button is clicked and start the game
 function skipAnimation() {
     introduction = false;
     sound_intro.pause();
@@ -372,7 +372,7 @@ function skipAnimation() {
 UPDATE AND MOVE OBJECTS
 ********************************************************/
 
-// Move hero
+//Move hero
 var moveHero = function (modifier) {
 
     if (38 in keysDown) { // Player holding up
@@ -399,7 +399,7 @@ var moveHero = function (modifier) {
 
 
 
-// Move Guards
+//Move Guards
 var moveGuard = function (guard, modifier) {
 
     if (!guard.direction) {
@@ -502,9 +502,11 @@ function checkProximity(guard, hero) {
 
     if (guard.x - hero.x < 80 && guard.x - hero.x > -80 && guard.y - hero.y < 80 && guard.y - hero.y > -80) {
 
+        // guard's position
         var startX = guard.x + guardImage.width / 2;
         var startY = guard.y + guardImage.height / 2;
 
+        // hero's position
         var endX = hero.x + heroImage.width / 2;
         var endY = hero.y + heroImage.height / 2;
 
@@ -512,15 +514,20 @@ function checkProximity(guard, hero) {
         var directionY;
 
         if (startX < endX)
+            // guard is left from hero
             directionX = 1;
         else
+            // guard is right from hero
             directionX = -1;
 
         if (startY < endY)
+            // guard is upper than hero
             directionY = 1;
         else
+            // guard is lower than hero
             directionY = -1;
 
+        // distance from guard to hero
         var deltax = Math.abs(endX - startX);
         var deltay = Math.abs(endY - startY);
 
@@ -530,10 +537,12 @@ function checkProximity(guard, hero) {
         var nbEtapes;
 
         if (deltax > deltay) {
-            nbEtapes = deltax / 5;
+            // horizontal distance is bigger than vertical
+            nbEtapes = deltax / 5;      // nb of controls to be done
             ratiox = 1;
             ratioy = deltay / deltax;
         } else {
+            // vertical distance is bigger than horizontal
             nbEtapes = deltay / 5;
             ratioy = 1;
             ratiox = deltax / deltay;
@@ -563,7 +572,7 @@ function setPlaying(bool) {
     playing = bool;
 }
 
-
+//called when hero is catched by a guard
 function heroCaught(guard) {
     heroIsCaught = true;
     heroCaughtX = guard.x;
@@ -571,8 +580,10 @@ function heroCaught(guard) {
     setPlaying(false);
     attempts--;
     if (attempts === 0) {
+        // no more lives
         stopGame("lose");
     } else {
+        // restart the game
         sound_caught.play();
         setTimeout(reset, 3000);
         setTimeout(setPlaying, 3000, true);
@@ -586,7 +597,7 @@ function heroCaught(guard) {
 DRAW EVERYTHING
 ********************************************************/
 
-// Reset positions
+//Reset positions
 var reset = function () {
     heroIsCaught = false;
     hero.key1 = false;
@@ -594,10 +605,10 @@ var reset = function () {
     hero.x = 75;
     hero.y = 460;
 
-    guard1.setPosition(333,500);
-    guard2.setPosition(160,46);
-    guard3.setPosition(720,220);
-    guard4.setPosition(680,20);
+    guard1.setPosition(333, 500);
+    guard2.setPosition(160, 46);
+    guard3.setPosition(720, 220);
+    guard4.setPosition(680, 20);
 
     key1.x = 15;
     key1.y = 180;
@@ -606,7 +617,7 @@ var reset = function () {
 };
 
 
-// Draw
+//Draw
 var render = function () {
 
     if (bgReady) {
@@ -663,7 +674,7 @@ var render = function () {
 
 };
 
-
+//Display lives remaining
 function drawAttempts() {
     if (heartReady) {
         var x = 10;
@@ -675,6 +686,7 @@ function drawAttempts() {
     }
 }
 
+//Display timer
 function drawTimer(timer) {
 
     var minutes = timer / 60000;
@@ -773,7 +785,7 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 PLAY AND STOP
 ********************************************************/
 
-
+//called when restarting same level
 function restartGame() {
     setPlaying(true);
 
@@ -782,6 +794,7 @@ function restartGame() {
     document.getElementById("win").style.display = "none";
 }
 
+//called when launching a new game
 function launchGame(level) {
     level1 = false;
     level2 = false;
@@ -822,7 +835,7 @@ function launchGame(level) {
 
 }
 
-
+//called when game is stopped (could be victory, lose or abort)
 function stopGame(statut) {
     setPlaying(false);
 
