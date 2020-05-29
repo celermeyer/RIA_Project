@@ -2,7 +2,7 @@
 VARIABLES
 **********************************************************/
 
-const DISTANCE_TO_BORDER = 4;
+const DISTANCE_TO_BORDER = 5;
 var introduction = false;
 var apparition = false;
 var playing = false;
@@ -86,11 +86,10 @@ function myDown(e) {
 
     dragok = false;
 
-    if (key1.x-hero.x<50 && key1.x-hero.x>-50 && key1.y-hero.y<50 && key1.y-hero.y>-50) {
+    if (key1.x - hero.x < 50 && key1.x - hero.x > -50 && key1.y - hero.y < 50 && key1.y - hero.y > -50) {
         dragok = true;
         key1.isDragging = true;
-    }
-    else if (key2.x-hero.x<50 && key2.x-hero.x>-50 && key2.y-hero.y<50 && key2.y-hero.y>-50) {
+    } else if (key2.x - hero.x < 50 && key2.x - hero.x > -50 && key2.y - hero.y < 50 && key2.y - hero.y > -50) {
         dragok = true;
         key2.isDragging = true;
     }
@@ -109,19 +108,18 @@ function myUp(e) {
     key1.isDragging = false;
     key2.isDragging = false;
 
-    var key1x = key1.x+keyImage.width/2;
-    var key1y = key1.y+keyImage.height/2;
+    var key1x = key1.x + keyImage.width / 2;
+    var key1y = key1.y + keyImage.height / 2;
 
-    var key2x = key2.x+keyImage.width/2;
-    var key2y = key2.y+keyImage.height/2;
+    var key2x = key2.x + keyImage.width / 2;
+    var key2y = key2.y + keyImage.height / 2;
 
-    if (key1x > hero.x && key1x<hero.x+heroImage.width && key1y>hero.y && key1y<hero.y+heroImage.height) {
+    if (key1x > hero.x && key1x < hero.x + heroImage.width && key1y > hero.y && key1y < hero.y + heroImage.height) {
         sound_key.play();
-        hero.key1=true;
-    }
-    else if (key2x > hero.x && key2x<hero.x+heroImage.width && key2y>hero.y && key2y<hero.y+heroImage.height) {
-        sound.key.play();
-        hero.key2=true;
+        hero.key1 = true;
+    } else if (key2x > hero.x && key2x < hero.x + heroImage.width && key2y > hero.y && key2y < hero.y + heroImage.height) {
+        sound_key.play();
+        hero.key2 = true;
     }
 }
 
@@ -138,11 +136,10 @@ function myMove(e) {
         var dx = mx - startX;
         var dy = my - startY;
 
-        if (key1.isDragging && key1.x-hero.x<50 && key1.x-hero.x>-50 && key1.y-hero.y<50 && key1.y-hero.y>-50) {
+        if (key1.isDragging && key1.x - hero.x < 50 && key1.x - hero.x > -50 && key1.y - hero.y < 50 && key1.y - hero.y > -50) {
             key1.x += dx;
             key1.y += dy;
-        }
-        else if (key2.isDragging && key2.x-hero.x<50 && key2.x-hero.x>-50 && key2.y-hero.y<50 && key2.y-hero.y>-50) {
+        } else if (key2.isDragging && key2.x - hero.x < 50 && key2.x - hero.x > -50 && key2.y - hero.y < 50 && key2.y - hero.y > -50) {
             key2.x += dx;
             key2.y += dy;
         }
@@ -165,7 +162,7 @@ GAME OBJECTS AND SOUNDS
 
 //SOUNDS
 var sound_game = new Audio("sounds/game_fond.wav");
-sound_game.volume=0.05;
+sound_game.volume = 0.05;
 var sound_caught = new Audio("sounds/caughtbyguard.wav");
 var sound_win = new Audio("sounds/applaudissements.wav");
 var sound_lost = new Audio("sounds/lost.wav");
@@ -201,8 +198,8 @@ heroImage.onload = function () {
 
 var hero = {
     speed: 125, // movement in pixels per second
-    key1:false,
-    key2:false,
+    key1: false,
+    key2: false,
 };
 
 
@@ -262,6 +259,26 @@ guardAngryImage.onload = function () {
 guardAngryImage.src = "images/guard_angry.png";
 
 
+//Guard
+function Guard() {
+    this.x;
+    this.y;
+    this.speed = 64;
+    this.direction = false;
+
+    this.setPosition = function (x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+var guard1 = new Guard();
+var guard2 = new Guard();
+var guard3 = new Guard();
+var guard4 = new Guard();
+
+
+
 //Heart
 var heartReady = false;
 var heartImage = new Image();
@@ -269,28 +286,6 @@ heartImage.onload = function () {
     heartReady = true;
 };
 heartImage.src = "images/heart.png";
-
-
-var guard1 = {
-    speed: 64,
-    direction: 0
-};
-
-var guard2 = {
-    speed: 64,
-    direction: 0
-};
-
-var guard3 = {
-    speed: 64,
-    direction: 0
-};
-
-var guard4 = {
-    speed: 64,
-    direction: 0
-};
-
 
 
 //Key
@@ -307,12 +302,11 @@ var key1 = {
 
 key1.isDragging = false;
 
-var key2 ={
+var key2 = {
 
 };
 
-key2.isDragging=false;
-
+key2.isDragging = false;
 
 
 
@@ -363,11 +357,10 @@ var startAnimation = function (modifier) {
 
 }
 
-function skipAnimation()
-{
+function skipAnimation() {
     introduction = false;
     sound_intro.pause();
-    sound_intro.currentTime=0;
+    sound_intro.currentTime = 0;
     document.getElementById("buttonSkip").style.display = "none";
     playing = true;
 }
@@ -409,7 +402,7 @@ var moveHero = function (modifier) {
 // Move Guards
 var moveGuard = function (guard, modifier) {
 
-    if (guard.direction == 0) {
+    if (!guard.direction) {
         guard.direction = Math.floor(Math.random() * 4) + 1;
     }
 
@@ -418,28 +411,28 @@ var moveGuard = function (guard, modifier) {
             if (isInMap(guard, guardImage, 'y', 1)) {
                 guard.y += guard.speed * modifier;
             } else {
-                guard.direction = 0;
+                guard.direction = false;
             }
             break;
         case 2:
             if (isInMap(guard, guardImage, 'x', 1)) {
                 guard.x += guard.speed * modifier;
             } else {
-                guard.direction = 0;
+                guard.direction = false;
             }
             break;
         case 3:
             if (isInMap(guard, guardImage, 'y', -1)) {
                 guard.y -= guard.speed * modifier;
             } else {
-                guard.direction = 0;
+                guard.direction = false;
             }
             break;
         case 4:
             if (isInMap(guard, guardImage, 'x', -1)) {
                 guard.x -= guard.speed * modifier;
             } else {
-                guard.direction = 0;
+                guard.direction = false;
             }
     }
 };
@@ -507,53 +500,57 @@ function checkProximity(guard, hero) {
 
     var attrape = false;
 
-    var posxmin;
-    var posxmax;
-
-    var posymin;
-    var posymax;
-
-    var ratiox;
-    var ratioy;
-
     if (guard.x - hero.x < 80 && guard.x - hero.x > -80 && guard.y - hero.y < 80 && guard.y - hero.y > -80) {
 
+        var startX = guard.x + guardImage.width / 2;
+        var startY = guard.y + guardImage.height / 2;
 
-        if (guard.x < hero.x) {
-            posxmin = guard.x;
-            posxmax = hero.x;
-        } else {
-            posxmin = hero.x;
-            posxmax = guard.x
-        }
+        var endX = hero.x + heroImage.width / 2;
+        var endY = hero.y + heroImage.height / 2;
 
-        if (guard.y < hero.y) {
-            posymin = guard.y;
-            posymax = hero.y;
-        } else {
-            posymin = hero.y;
-            posymax = guard.y;
-        }
+        var directionX;
+        var directionY;
 
-        var deltax = posxmax - posxmin;
-        var deltay = posymax - posymin;
+        if (startX < endX)
+            directionX = 1;
+        else
+            directionX = -1;
 
-        if (deltax > deltay){
+        if (startY < endY)
+            directionY = 1;
+        else
+            directionY = -1;
+
+        var deltax = Math.abs(endX - startX);
+        var deltay = Math.abs(endY - startY);
+
+        var ratiox;
+        var ratioy;
+
+        var nbEtapes;
+
+        if (deltax > deltay) {
+            nbEtapes = deltax / 5;
             ratiox = 1;
-            ratioy = deltay/deltax;
+            ratioy = deltay / deltax;
         } else {
+            nbEtapes = deltay / 5;
             ratioy = 1;
-            ratiox = deltax/deltay;
+            ratiox = deltax / deltay;
         }
 
-        while (posxmin < posxmax || posymin < posymax) {
-            var imageData = ctx.getImageData(posxmin, posymin, canvas.width, canvas.height).data;
+
+        while (nbEtapes > 0) {
+            var imageData = ctx.getImageData(startX, startY, canvas.width, canvas.height).data;
 
             if (imageData[0] === 51 && imageData[1] === 0 && imageData[2] === 0) {
                 return;
             }
-            posxmin += 5*ratiox;
-            posymin += 5*ratioy;
+
+            startX += directionX * 5 * ratiox;
+            startY += directionY * 5 * ratioy;
+
+            nbEtapes--;
         }
 
         heroCaught(guard);
@@ -592,18 +589,16 @@ DRAW EVERYTHING
 // Reset positions
 var reset = function () {
     heroIsCaught = false;
-    hero.key1=false;
-    hero.key2=false;
+    hero.key1 = false;
+    hero.key2 = false;
     hero.x = 75;
     hero.y = 460;
-    guard1.x = 333;
-    guard1.y = 500;
-    guard2.x = 160;
-    guard2.y = 46;
-    guard3.x = 720;
-    guard3.y = 220;
-    guard4.x = 680;
-    guard4.y = 20;
+
+    guard1.setPosition(333,500);
+    guard2.setPosition(160,46);
+    guard3.setPosition(720,220);
+    guard4.setPosition(680,20);
+
     key1.x = 15;
     key1.y = 180;
     key2.x = 740;
@@ -626,17 +621,21 @@ var render = function () {
         ctx.drawImage(guardImage, guard1.x, guard1.y);
         ctx.drawImage(guardImage, guard2.x, guard2.y);
         ctx.drawImage(guardImage, guard3.x, guard3.y);
-        if(level3)
+        if (level3)
             ctx.drawImage(guardImage, guard4.x, guard4.y);
     }
 
     if (keyReady) {
-        if(level2 || level3)
-            if(!hero.key1)
-            ctx.drawImage(keyImage, key1.x, key1.y);
-        if(level3)
-            if(!hero.key2)
-            ctx.drawImage(keyImage, key2.x, key2.y);
+        if (level2 || level3) {
+            if (!hero.key1) {
+                ctx.drawImage(keyImage, key1.x, key1.y);
+            }
+        }
+        if (level3) {
+            if (!hero.key2) {
+                ctx.drawImage(keyImage, key2.x, key2.y);
+            }
+        }
     }
 
     if (introduction) {
@@ -684,7 +683,7 @@ function drawTimer(timer) {
     ctx.font = "30px Arial";
     ctx.fillStyle = "white";
 
-    if(Math.floor(secondes) < 10)
+    if (Math.floor(secondes) < 10)
         ctx.fillText(Math.floor(minutes) + ":0" + Math.floor(secondes), 10, 50);
     else
         ctx.fillText(Math.floor(minutes) + ":" + Math.floor(secondes), 10, 50);
@@ -726,26 +725,25 @@ var main = function () {
 
 var update = function (modifier) {
 
-    console.log("update");
-
     moveGuard(guard1, modifier);
     moveGuard(guard2, modifier);
     moveGuard(guard3, modifier);
 
     moveHero(modifier);
 
-    if(hero.x >= 855 && hero.y <= 55){
+    if (hero.x >= 855 && hero.y <= 55) {
 
-        if(level1)
+        if (level1)
             stopGame("victory");
-        if(level2){
-            if(hero.key1)
+        if (level2) {
+            if (hero.key1) {
                 stopGame("victory");
+            }
         }
-        if(level3){
-            if(hero.key1)
-                if(hero.key2)
-                    stopGame("victory");
+        if (level3) {
+            if (hero.key1 && hero.key2) {
+                stopGame("victory");
+            }
         }
     }
 
@@ -753,7 +751,7 @@ var update = function (modifier) {
     checkProximity(guard2, hero);
     checkProximity(guard3, hero);
 
-    if(level3){
+    if (level3) {
         moveGuard(guard4, modifier);
         checkProximity(guard4, hero);
     }
@@ -785,7 +783,10 @@ function restartGame() {
 }
 
 function launchGame(level) {
-    console.log("launchgame");
+    level1 = false;
+    level2 = false;
+    level3 = false;
+
     switch (level) {
         case "level1":
             level1 = true;
@@ -827,24 +828,22 @@ function stopGame(statut) {
 
     sound_game.pause();
 
-    if(statut == "victory"){
+    if (statut == "victory") {
         sound_win.play();
         document.getElementById("game").style.display = "none";
         document.getElementById("lose").style.display = "none";
         document.getElementById("win").style.display = "";
-    }
-    else if (statut == "lose") {
+    } else if (statut == "lose") {
         sound_lost.play();
         document.getElementById("game").style.display = "none";
         document.getElementById("win").style.display = "none";
         document.getElementById("lose").style.display = "";
-    }
-    else if (statut == "abort") {
+    } else if (statut == "abort") {
         sound_intro.pause();
-        sound_intro.currentTime=0;
+        sound_intro.currentTime = 0;
         document.getElementById("mainmenu").style.display = "";
         document.getElementById("game").style.display = "none";
-        introduction=false;
+        introduction = false;
         //displayMenu();
     }
 
@@ -861,8 +860,8 @@ function stopGame(statut) {
 
     attempts = 3;
 
-    hero.key1=false;
-    hero.key2=false;
+    hero.key1 = false;
+    hero.key2 = false;
 
     reset();
 }
