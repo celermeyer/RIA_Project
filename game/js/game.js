@@ -731,7 +731,9 @@ var update = function (modifier) {
 
     moveHero(modifier);
 
-    if (hero.x >= 855 && hero.y <= 55) {
+    // ATTTENTION: REMODIFIER
+    //if (hero.x >= 855 && hero.y <= 55)
+    if (hero.x >= 855 && hero.y >= 55) {
 
         if (level1)
             stopGame("victory");
@@ -849,6 +851,8 @@ function stopGame(statut) {
 
     pause1 = 200;
     pause2 = 200;
+
+    window.localStorage.setItem("escapethejail-score",timer);
 
     timer = 0;
 

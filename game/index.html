@@ -35,7 +35,7 @@
         <div id="win">
             <img class="background" src="images/background_win.png"/>
             <img id="returnMenuButton" class="actionbutton" src="images/button-returnmenu.png" onclick="displayMenu()"/>
-            <img id="saveScoreButton" class="actionbutton" src="images/button-savescore.png" onclick="displaySaveScore()"/>
+            <img id="saveScoreButton" class="actionbutton" src="images/button-savescore.png" onclick="displaySaveScore(getLocation)"/>
         </div>
 
         <div id="mainmenu">
@@ -47,17 +47,20 @@
 
         <div id="saveScore" style='width: 1000px; height: 600px; border-style: solid;'>
             <img class="background" src="images/background_win.png"/>
-            <div class="form">
-                <form name="scoreForm" method="get" onSubmit="return saveScoreToFile()">
-                    <label for="name">Name:</label><br>
-                    <input type="text" id="nname" name="nname"><br>
-                    <label for="city">City:</label><br>
-                    <input type="text" id="ncity" name="ncity" readonly><br>
-                    <label for="noLocation" id="noLocation" style='display: none; color:red;'>Position inaccessible<br></label>
-                    <input type="button" value="Get Location" onclick="getLocation()"/><br><br>
-                    <input type="submit" value="Submit">
-                </form>
-            </div>
+            <img class="backbutton" src="images/backbutton.png" onclick="displayWin()"/>
+
+            <table id="saveScoreForm">
+                <tr>
+                    <td><label for="name">Name</label></td>
+                    <td><input id="name" type="text" placeholder="name"/></td>
+                </tr>
+                <tr>
+                    <td><label for="city">City</label></td>
+                    <td><input id="city" type="text" readonly placeholder="city"/></td>
+                </tr>
+                <tr><td><input type="button" value="Save !" onclick="saveScoreToFile(displayHOF)"></td></tr>
+            </table>
+
         </div>
 
         <div id="levelselection">
@@ -78,6 +81,8 @@
         <div id="hallOfFame">
                 <img class="background" src="images/halloffame_background.png"/>
                 <img class="backbutton" src="images/backbutton.png" onclick="displayMenu()"/>
+                <table id="hof">
+                </table>
         </div>
 
     </div>
@@ -93,7 +98,7 @@
         document.getElementById("hallOfFame").style.display = "none";
         document.getElementById("lose").style.display = "none";
         document.getElementById("win").style.display = "none";
-        //document.getElementById("saveScore").style.display = "none";
+        document.getElementById("saveScore").style.display = "none";
     }
 
     function displayLevelSelection (){
@@ -127,6 +132,7 @@
         document.getElementById("lose").style.display = "none";
         document.getElementById("win").style.display = "none";
         document.getElementById("saveScore").style.display = "none";
+        showHof();
     }
 
     function displayLose (){
@@ -140,38 +146,184 @@
         document.getElementById("saveScore").style.display = "none";
     }
 
+    function displayWin (){
+        document.getElementById("mainmenu").style.display = "none";
+        document.getElementById("game").style.display = "none";
+        document.getElementById("levelselection").style.display = "none";
+        document.getElementById("rules").style.display = "none";
+        document.getElementById("hallOfFame").style.display = "none";
+        document.getElementById("lose").style.display = "none";
+        document.getElementById("win").style.display = "";
+        document.getElementById("saveScore").style.display = "none";
+    }
+
+    function displaySaveScore(callback){
+        document.getElementById("mainmenu").style.display = "none";
+        document.getElementById("game").style.display = "none";
+        document.getElementById("levelselection").style.display = "none";
+        document.getElementById("rules").style.display = "none";
+        document.getElementById("hallOfFame").style.display = "none";
+        document.getElementById("lose").style.display = "none";
+        document.getElementById("win").style.display = "none";
+        document.getElementById("saveScore").style.display = "";
+        callback();
+    }
+
     function getLocation(){
         var reverseGeocoder=new BDCReverseGeocode();
         reverseGeocoder.localityLanguage='fr';
 
         reverseGeocoder.getClientLocation(function(result) {
             if(result){
-                document.getElementById("ncity").value = result.locality + ', ' + result.countryName;
-                document.getElementById("noLocation").style.display = "none";
+                document.getElementById("city").value = result.locality + ', ' + result.countryName;
             } else {
-                document.getElementById("ncity").value = '---';
-                document.getElementById("noLocation").style.display = "";
+                document.getElementById("city").value = 'Unknown';
             }
         });
 
     }
 
-    function saveScoreToFile(){
-        console.log();
+    function saveScoreToFile(callback){
 
-        var testObject = { 'name': document.getElementById("nname").value, 'position': document.getElementById("ncity").value };
-        // Put the object into storage
-        localStorage.setItem('testObject', JSON.stringify(testObject));
+        // scores dans le localStorage
+        let dbLocalStorage = window.localStorage.getItem("escapethejail-db-hof");
+        let db;
+        if (dbLocalStorage == null) {
+            loadHofInLocalStorage("game");
+        } else {
+            db = JSON.parse(dbLocalStorage);
+        }
+
+        // nom du joueur
+        let name = document.getElementById("name").value;
+        if(name != ""){
+            let city = document.getElementById("city").value;
+            // récup du temps
+            let score = window.localStorage.getItem("escapethejail-score");
+            // si on a un score à ajouter
+            if (score != null) {
+
+                // date du jour au format yyyy-mm-dd
+                let m = new Date();
+                let dateString =
+                    m.getUTCFullYear() + "-" +
+                    ("0" + (m.getUTCMonth() + 1)).slice(-2) + "-" +
+                    ("0" + m.getUTCDate()).slice(-2);
+
+                // ajout des informations du joueur dans le fichier des scores
+                if (db != null) {
+                    let item = {
+                        name: name,
+                        score: score,
+                        timestamp: dateString,
+                        city: city
+                    };
+                    db.push(item);
+                }
+
+                // écriture du fichier des scores
+                window.localStorage.setItem("escapethejail-db-hof", JSON.stringify(db));
+
+                // effacer les données de la parties actuelles (éviter de rajouter plusieurs fois le même score avec F5)
+                window.localStorage.removeItem("escapethejail-score");
+            } else {
+                console.log("No score to process");
+            }
+            callback();
+        }else{
+            window.alert("Merci de saisir un nom");
+        }
 
     }
 
+
+    function loadHofInLocalStorage(){
+    // chargement du fichier des scores (hof.db)
+        let db;
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                //console.log(this.responseText);
+                db = JSON.parse(this.responseText);
+                //console.log(db);
+                console.log("Base de données des scores chargée. Creating local storage copy");
+                window.localStorage.setItem("escapethejail-db-hof", JSON.stringify(db));
+
+            } else if(this.status == 404) {
+                console.log("Base de données des scores introuvable.")
+            }
+        };
+        xhttp.open("GET", "db/hof.json", false); // FALSE POUR ATTENDRE LA RÉPONSE
+        xhttp.send();
+    }
+
+
+    function showHof(){
+
+        document.getElementById("hof").innerText = '';
+
+        // scores dans le localStorage
+        let dbLocalStorage = window.localStorage.getItem("escapethejail-db-hof");
+        let db;
+        if(dbLocalStorage == null) {
+            loadHofInLocalStorage();
+            console.log('On créé le stockage');
+        } else {
+            db = JSON.parse(dbLocalStorage);
+            console.log(db);
+        }
+
+
+        if (db != null) {
+            if (db.length > 0) {
+                // tri des enregistrements
+                db.sort(function (a, b) {
+                    return parseInt(b.score) - parseInt(a.score);
+                });
+
+                // affichage
+                tableHof = document.getElementById("hof");
+
+                // entête
+                header = tableHof.createTHead();
+                row = header.insertRow(-1);
+                row.insertCell(0).innerHTML = "";
+                row.insertCell(1).innerHTML = "Joueur"
+                row.insertCell(2).innerHTML = "Ville"
+                row.insertCell(3).innerHTML = "Score"
+                row.insertCell(4).innerHTML = "Date"
+
+
+                //console.log(tableHof);
+                body = tableHof.createTBody();
+                for (var line in db) {
+                    console.log(line);
+                    row = body.insertRow(-1);
+                    /*
+                    if(line <= 2) { // pour les 3 premiers (index à 0)
+                        row.className = "hof-top-"+(+line+1); // "+line" pour forcer l'addition comme des chiffres
+                        if(line == 0) row.insertCell(0).innerHTML = "1";
+                        else if(line == 1) row.insertCell(0).innerHTML = "2";
+                        else if(line == 2) row.insertCell(0).innerHTML = "3";
+                    } else {
+                        row.insertCell(0).innerHTML = "#"+(+line+1);
+                    }*/
+
+                    row.insertCell(0).innerHTML = (+line+1);
+
+                    console.log('Score : ' + db[line].score);
+                    row.insertCell(1).innerHTML = db[line].name;
+                    row.insertCell(2).innerHTML = db[line].city;
+                    row.insertCell(3).innerHTML = db[line].score;
+                    row.insertCell(4).innerHTML = db[line].timestamp;
+                }
+            } else {
+                document.getElementById("hof").innerText = "Pas de scores à afficher";
+            }
+        }
+    }
+
     window.onload = displayMenu;
-
-    // Retrieve the object from storage
-    var retrievedObject = localStorage.getItem('testObject');
-    console.log('retrievedObject: ', JSON.parse(retrievedObject));
-
-
 
 </script>
 
