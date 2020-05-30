@@ -293,21 +293,11 @@
                 row.insertCell(3).innerHTML = "Score"
                 row.insertCell(4).innerHTML = "Date"
 
-
-                //console.log(tableHof);
                 body = tableHof.createTBody();
                 for (var line in db) {
                     console.log(line);
                     row = body.insertRow(-1);
-                    /*
-                    if(line <= 2) { // pour les 3 premiers (index à 0)
-                        row.className = "hof-top-"+(+line+1); // "+line" pour forcer l'addition comme des chiffres
-                        if(line == 0) row.insertCell(0).innerHTML = "1";
-                        else if(line == 1) row.insertCell(0).innerHTML = "2";
-                        else if(line == 2) row.insertCell(0).innerHTML = "3";
-                    } else {
-                        row.insertCell(0).innerHTML = "#"+(+line+1);
-                    }*/
+
 
                     row.insertCell(0).innerHTML = (+line+1);
 
