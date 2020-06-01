@@ -200,6 +200,17 @@
             let city = document.getElementById("city").value;
             // récup du temps
             let score = window.localStorage.getItem("escapethejail-score");
+            let displayScore;
+            var minutes = score / 60000;
+            var secondes = (minutes - Math.floor(minutes)) * 60;
+
+            if (Math.floor(secondes) < 10)
+                displayScore = Math.floor(minutes) + ":0" + Math.floor(secondes);
+            else
+                displayScore = Math.floor(minutes) + ":" + Math.floor(secondes);
+
+
+            let level = window.localStorage.getItem("escapethejail-level");
             // si on a un score à ajouter
             if (score != null) {
 
@@ -216,7 +227,9 @@
                         name: name,
                         score: score,
                         timestamp: dateString,
-                        city: city
+                        city: city,
+                        level: level,
+                        displayScore: displayScore
                     };
                     db.push(item);
                 }
@@ -224,8 +237,14 @@
                 // écriture du fichier des scores
                 window.localStorage.setItem("escapethejail-db-hof", JSON.stringify(db));
 
+                document.getElementById("name").value='';
+                document.getElementById("city").value = 'Unknown';
+
+
                 // effacer les données de la parties actuelles (éviter de rajouter plusieurs fois le même score avec F5)
                 window.localStorage.removeItem("escapethejail-score");
+                window.localStorage.removeItem("escapethejail-level");
+
             } else {
                 console.log("No score to process");
             }
@@ -277,7 +296,7 @@
         if (db != null) {
             if (db.length > 0) {
                 // tri des enregistrements
-                db.sort(function (a, b) {
+                db.sort(function (b, a) {
                     return parseInt(b.score) - parseInt(a.score);
                 });
 
@@ -294,18 +313,71 @@
                 row.insertCell(4).innerHTML = "Date"
 
                 body = tableHof.createTBody();
+
+                var db_level1 = [];
+                var db_level2 = [];
+                var db_level3 = [];
+                var i1= 0;
+                var i2= 0;
+                var i3= 0;
+
                 for (var line in db) {
-                    console.log(line);
+
+                    if(i1<3 && db[line].level==1){
+                        db_level1[i1]=db[line];
+                        i1++;
+                    }
+                    else if(i2<3 && db[line].level==2){
+                        db_level2[i2]=db[line];
+                        i2++;
+                    }
+                    else if(i3<3 && db[line].level==3){
+                        db_level3[i3]=db[line];
+                        i3++;
+                    }
+
+                }
+
+                if(db_level1.length>0){
                     row = body.insertRow(-1);
+                    row.insertCell(0).innerHTML = 'Niveau 1';
+                    row.className='level';
+                    for (var line in db_level1) {
+                        row = body.insertRow(-1);
+                        row.insertCell(0).innerHTML = (+line+1);
+                        row.insertCell(1).innerHTML = db_level1[line].name;
+                        row.insertCell(2).innerHTML = db_level1[line].city;
+                        row.insertCell(3).innerHTML = db_level1[line].displayScore;
+                        row.insertCell(4).innerHTML = db_level1[line].timestamp;
+                    }
+                }
 
+                if(db_level2.length>0){
+                    row = body.insertRow(-1);
+                    row.insertCell(0).innerHTML = 'Niveau 2';
+                    row.className='level';
+                    for (var line in db_level2) {
+                        row = body.insertRow(-1);
+                        row.insertCell(0).innerHTML = (+line+1);
+                        row.insertCell(1).innerHTML = db_level2[line].name;
+                        row.insertCell(2).innerHTML = db_level2[line].city;
+                        row.insertCell(3).innerHTML = db_level2[line].displayScore;
+                        row.insertCell(4).innerHTML = db_level2[line].timestamp;
+                    }
+                }
 
-                    row.insertCell(0).innerHTML = (+line+1);
-
-                    console.log('Score : ' + db[line].score);
-                    row.insertCell(1).innerHTML = db[line].name;
-                    row.insertCell(2).innerHTML = db[line].city;
-                    row.insertCell(3).innerHTML = db[line].score;
-                    row.insertCell(4).innerHTML = db[line].timestamp;
+                if(db_level3.length>0){
+                    row = body.insertRow(-1);
+                    row.insertCell(0).innerHTML = 'Niveau 3';
+                    row.className='level';
+                    for (var line in db_level3) {
+                        row = body.insertRow(-1);
+                        row.insertCell(0).innerHTML = (+line+1);
+                        row.insertCell(1).innerHTML = db_level3[line].name;
+                        row.insertCell(2).innerHTML = db_level3[line].city;
+                        row.insertCell(3).innerHTML = db_level3[line].displayScore;
+                        row.insertCell(4).innerHTML = db_level3[line].timestamp;
+                    }
                 }
             } else {
                 document.getElementById("hof").innerText = "Pas de scores à afficher";

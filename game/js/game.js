@@ -731,9 +731,9 @@ var update = function (modifier) {
 
     moveHero(modifier);
 
-    // POUR GAGNER FACILEMENT ET ARRIVER A LA GESTION DU SCORE
-    //if (hero.x >= 855 && hero.y >= 55)
-    if (hero.x >= 855 && hero.y <= 55) {
+    // ATTENTION: REMETTRE LIGNE DE COMMENTAIRE
+    //if (hero.x >= 855 && hero.y <= 55)
+    if (hero.x >= 855 && hero.y >= 55) {
 
         if (level1)
             stopGame("victory");
@@ -853,6 +853,12 @@ function stopGame(statut) {
     pause2 = 200;
 
     window.localStorage.setItem("escapethejail-score",timer);
+    if(level1)
+        window.localStorage.setItem("escapethejail-level",1);
+    else if(level2)
+        window.localStorage.setItem("escapethejail-level",2);
+    else
+        window.localStorage.setItem("escapethejail-level",3);
 
     timer = 0;
 

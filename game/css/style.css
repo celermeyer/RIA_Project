@@ -134,7 +134,8 @@ SAVE SCORE
     left : 300px;
     font-family: Bahnschrift;
     color:white;
-    background-color: black;
+    background-color: #434343;
+    border-radius: 10px;
 }
 
 
@@ -150,11 +151,18 @@ HALL OF FAME
     color: white;
 }
 
+#hof .level td {
+    font-size: 1.3em;
+    padding-top: 10px;
+}
+
 #hof thead td {
     font-size: 1.5em;
 }
 
-#hof th,td {
-    padding: 0 26px;
+#hof td {
+    padding-left: 26px;
+    padding-right: 26px;
     text-align: justify;
 }
+
