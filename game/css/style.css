@@ -128,7 +128,33 @@ LOSE AND WIN SCREENS
 SAVE SCORE
 ********************************************/
 
-.form {
+#saveScoreForm {
     position: absolute;
-    bottom: 100px;
+    top: 395px;
+    left : 300px;
+    font-family: Bahnschrift;
+    color:white;
+    background-color: black;
+}
+
+
+/********************************************
+HALL OF FAME
+********************************************/
+
+#hof {
+    position: absolute;
+    top: 150px;
+    left: 130px;
+    font-family: Bahnschrift;
+    color: white;
+}
+
+#hof thead td {
+    font-size: 1.5em;
+}
+
+#hof th,td {
+    padding: 0 26px;
+    text-align: justify;
 }
