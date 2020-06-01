@@ -166,6 +166,7 @@ var soundWin = new Audio("sounds/applaudissements.wav");
 var soundLost = new Audio("sounds/lost.wav");
 var soundKey = new Audio("sounds/whoosh.wav");
 var soundIntro = new Audio("sounds/voixintro.ogg");
+var endFalse = new Audio("sounds/false.wav")
 
 //BG
 var bgReady = false;
@@ -717,10 +718,16 @@ function update(modifier) {
             if (hero.key1) {
                 stopGame("victory");
             }
+            else{
+                endFalse.play();
+            }
         }
         if (level3) {
             if (hero.key1 && hero.key2) {
                 stopGame("victory");
+            }
+            else{
+                endFalse.play();
             }
         }
     }
