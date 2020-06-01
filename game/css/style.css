@@ -130,12 +130,29 @@ SAVE SCORE
 
 #saveScoreForm {
     position: absolute;
-    top: 395px;
-    left : 300px;
+    top: 50px;
+    left : 215px;
     font-family: Bahnschrift;
+    font-size: 30px;
     color:white;
     background-color: #434343;
     border-radius: 10px;
+    padding: 120px;
+}
+
+#saveScoreForm #save {
+    font-family: Bahnschrift;
+    font-size: 25px;
+    text-align: center;
+    position: relative;
+    left: 88px;
+    padding-left:40px;
+    padding-right:40px;
+    margin-top: 30px;
+}
+
+#saveScoreForm .saveScoreInput {
+    height:25px;
 }
 
 

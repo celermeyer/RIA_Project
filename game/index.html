@@ -52,13 +52,13 @@
             <table id="saveScoreForm">
                 <tr>
                     <td><label for="name">Name</label></td>
-                    <td><input id="name" type="text" placeholder="name"/></td>
+                    <td><input id="name" type="text" class="saveScoreInput" placeholder="name"/></td>
                 </tr>
                 <tr>
                     <td><label for="city">City</label></td>
-                    <td><input id="city" type="text" readonly placeholder="city"/></td>
+                    <td><input id="city" type="text" class="saveScoreInput" readonly placeholder="city"/></td>
                 </tr>
-                <tr><td><input type="button" value="Save !" onclick="saveScoreToFile(displayHOF)"></td></tr>
+                <tr><td><input type="button" id="save" value="Save !" onclick="saveScoreToFile(displayHOF)"></td></tr>
             </table>
 
         </div>
