@@ -3,9 +3,9 @@ GENERAL
 ********************************************/
 
 .container {
-    position: relative;
-    top: 0;
-    left: 0;
+    margin: auto;
+    width: 1000px;
+
 }
 
 .background {
@@ -17,8 +17,34 @@ GENERAL
 
 .backbutton {
     position: absolute;
-    bottom: 20px;
+    bottom: 15px;
     left: 15px;
+}
+
+body {
+    background: rgb(255,255,255);
+    background: radial-gradient(circle, rgba(255,255,255,1) 10%, rgba(107,97,104,1) 100%);
+}
+
+
+
+header {
+    text-align: center;
+    font-family: Bahnschrift;
+    margin-bottom: 25px;
+}
+
+header h1 {
+    font-size:2.5em;
+}
+
+header .button {
+    background-color: #555555;
+    color: white;
+    padding: 15px 32px;
+    text-decoration: none;
+    font-size: 1em;
+
 }
 
 
@@ -140,6 +166,11 @@ SAVE SCORE
     padding: 120px;
 }
 
+#saveScoreForm .saveScoreInput {
+    height:25px;
+
+}
+
 #saveScoreForm #save {
     font-family: Bahnschrift;
     font-size: 25px;
@@ -149,10 +180,6 @@ SAVE SCORE
     padding-left:40px;
     padding-right:40px;
     margin-top: 30px;
-}
-
-#saveScoreForm .saveScoreInput {
-    height:25px;
 }
 
 
