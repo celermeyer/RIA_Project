@@ -262,9 +262,7 @@
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                //console.log(this.responseText);
                 db = JSON.parse(this.responseText);
-                //console.log(db);
                 console.log("Base de données des scores chargée. Creating local storage copy");
                 window.localStorage.setItem("escapethejail-db-hof", JSON.stringify(db));
 
@@ -338,6 +336,8 @@
 
                 }
 
+                var name_reduced;
+
                 if(db_level1.length>0){
                     row = body.insertRow(-1);
                     row.insertCell(0).innerHTML = 'Niveau 1';
@@ -345,7 +345,8 @@
                     for (var line in db_level1) {
                         row = body.insertRow(-1);
                         row.insertCell(0).innerHTML = (+line+1);
-                        row.insertCell(1).innerHTML = db_level1[line].name;
+                        name_reduced = db_level1[line].name.substring(0,15);
+                        row.insertCell(1).innerHTML = name_reduced;
                         row.insertCell(2).innerHTML = db_level1[line].city;
                         row.insertCell(3).innerHTML = db_level1[line].displayScore;
                         row.insertCell(4).innerHTML = db_level1[line].timestamp;
@@ -359,7 +360,8 @@
                     for (var line in db_level2) {
                         row = body.insertRow(-1);
                         row.insertCell(0).innerHTML = (+line+1);
-                        row.insertCell(1).innerHTML = db_level2[line].name;
+                        name_reduced = db_level2[line].name.substring(0,15);
+                        row.insertCell(1).innerHTML = name_reduced;
                         row.insertCell(2).innerHTML = db_level2[line].city;
                         row.insertCell(3).innerHTML = db_level2[line].displayScore;
                         row.insertCell(4).innerHTML = db_level2[line].timestamp;
@@ -373,7 +375,8 @@
                     for (var line in db_level3) {
                         row = body.insertRow(-1);
                         row.insertCell(0).innerHTML = (+line+1);
-                        row.insertCell(1).innerHTML = db_level3[line].name;
+                        name_reduced = db_level3[line].name.substring(0,15);
+                        row.insertCell(1).innerHTML = name_reduced;
                         row.insertCell(2).innerHTML = db_level3[line].city;
                         row.insertCell(3).innerHTML = db_level3[line].displayScore;
                         row.insertCell(4).innerHTML = db_level3[line].timestamp;
