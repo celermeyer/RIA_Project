@@ -3,9 +3,9 @@ GENERAL
 ********************************************/
 
 .container {
-    position: relative;
-    top: 0;
-    left: 0;
+    margin: auto;
+    width: 1000px;
+
 }
 
 .background {
@@ -17,8 +17,34 @@ GENERAL
 
 .backbutton {
     position: absolute;
-    bottom: 20px;
+    bottom: 15px;
     left: 15px;
+}
+
+body {
+    background: rgb(255,255,255);
+    background: radial-gradient(circle, rgba(255,255,255,1) 10%, rgba(107,97,104,1) 100%);
+}
+
+
+
+header {
+    text-align: center;
+    font-family: Bahnschrift;
+    margin-bottom: 25px;
+}
+
+header h1 {
+    font-size:2.5em;
+}
+
+header .button {
+    background-color: #555555;
+    color: white;
+    padding: 15px 32px;
+    text-decoration: none;
+    font-size: 1em;
+
 }
 
 
@@ -128,7 +154,59 @@ LOSE AND WIN SCREENS
 SAVE SCORE
 ********************************************/
 
-.form {
+#saveScoreForm {
     position: absolute;
-    bottom: 100px;
+    top: 50px;
+    left : 215px;
+    font-family: Bahnschrift;
+    font-size: 30px;
+    color:white;
+    background-color: #434343;
+    border-radius: 10px;
+    padding: 120px;
 }
+
+#saveScoreForm .saveScoreInput {
+    height:25px;
+
+}
+
+#saveScoreForm #save {
+    font-family: Bahnschrift;
+    font-size: 25px;
+    text-align: center;
+    position: relative;
+    left: 88px;
+    padding-left:40px;
+    padding-right:40px;
+    margin-top: 30px;
+}
+
+
+/********************************************
+HALL OF FAME
+********************************************/
+
+#hof {
+    position: absolute;
+    top: 150px;
+    left: 130px;
+    font-family: Bahnschrift;
+    color: white;
+}
+
+#hof .level td {
+    font-size: 1.3em;
+    padding-top: 10px;
+}
+
+#hof thead td {
+    font-size: 1.5em;
+}
+
+#hof td {
+    padding-left: 26px;
+    padding-right: 26px;
+    text-align: justify;
+}
+
