@@ -1,3 +1,7 @@
+var dbLocalStorage;
+var db;
+
+
 function getLocation() {
     var reverseGeocoder = new BDCReverseGeocode();
     reverseGeocoder.localityLanguage = 'fr';
@@ -15,8 +19,7 @@ function getLocation() {
 function saveScoreToFile(callback) {
 
     // scores dans le localStorage
-    let dbLocalStorage = window.localStorage.getItem("escapethejail-db-hof");
-    let db;
+    dbLocalStorage = window.localStorage.getItem("escapethejail-db-hof");
     if (dbLocalStorage == null) {
         loadHofInLocalStorage("game");
     } else {
@@ -87,7 +90,6 @@ function saveScoreToFile(callback) {
 
 function loadHofInLocalStorage() {
     // chargement du fichier des scores (hof.db)
-    let db;
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
@@ -109,14 +111,11 @@ function showHof() {
     document.getElementById("hof").innerText = '';
 
     // scores dans le localStorage
-    let dbLocalStorage = window.localStorage.getItem("escapethejail-db-hof");
-    let db;
+    dbLocalStorage = window.localStorage.getItem("escapethejail-db-hof");
     if (dbLocalStorage == null) {
         loadHofInLocalStorage();
-        console.log('On créé le stockage');
     } else {
         db = JSON.parse(dbLocalStorage);
-        console.log(db);
     }
 
 
